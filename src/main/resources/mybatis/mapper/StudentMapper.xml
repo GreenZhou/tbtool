@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<!-- 0 一些前置信息配置 -->
+
+<mapper namespace="com.augurit.awater.dao.StudentMapper">
+	
+	<sql id="allColumns">
+		CODE  code,
+        NAME  name,
+        AGE  age,
+        SEX  sex,
+        ADDRESS  address,
+        PHONE  phone
+	</sql>
+	
+<!-- 查询学生信息列表 -->
+	<select id="listStudent" resultType="Student" parameterType="Student">
+		select 
+			<include refid="allColumns"/>
+		from student 
+		<where>
+			1 = 1
+			<if test="name != null">
+				<!-- oracle中的concat函数只有两个参数 -->
+				<!-- and name like CONCAT('%', #{name}, '%') -->
+				and name like '%' || #{name} || '%'
+			</if>
+			<if test="address != null">
+				and address like '%'|| #{address} || '%'
+			</if>
+		</where>
+	</select>
+	
+<!-- 插入一条学生信息 -->	
+	<insert id="insertStudent" parameterType="Student">
+		insert into student (code, name, age, sex, address, phone) 
+		values (#{code}, #{name}, #{age}, #{sex}, #{address}, #{phone})
+	</insert>
+	
+<!-- 根据主键code获取一条学生信息 -->
+	<select id="getStudentByCode" resultType="Student">
+		select 
+			<include refid="allColumns"/>
+		from student where code = #{code}
+	</select>
+	
+<!-- 根据主键code修改一条学生信息 (应该是不可能为null吧？)-->	
+	<update id="updateStudent" parameterType="Student">
+		update student 
+		<set>
+			<if test="code != null">
+				code = #{code},
+			</if>
+			<if test="name != null">
+				name = #{name},
+			</if>
+			<if test="age != null">
+				age = #{age},
+			</if>
+			<if test="sex != null">
+				sex = #{sex},
+			</if>
+			<if test="address != null">
+				address = #{address},
+			</if>
+			<if test="phone != null">
+				phone = #{phone}
+			</if>
+		</set>
+		where code = #{code}
+	</update>
+	
+<!-- 根据code删除学生信息 -->
+	<delete id="deleteStudent">
+		delete from student where code = #{code}
+	</delete>
+	
+</mapper>

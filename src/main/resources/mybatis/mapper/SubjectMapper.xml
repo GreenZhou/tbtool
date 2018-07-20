@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.augurit.awater.dao.SubjectMapper">
+    <!-- 查询水库列表__修改后 -->
+    <select id="findReservoirList" resultType="map" parameterType="map">
+        select t.*, (t.sw-nvl(t.xxsw, 0)) beyond from st_rsvr_r_view t
+        where 1=1
+        <if test="zm != null and zm != ''">
+            and t.zm like '%' || #{zm} || '%'
+        </if>
+        <if test="xzq != null and xzq != ''">
+            and t.xzq like '%' || #{xzq} || '%'
+        </if>
+        <if test="zlStr != null and zlStr != ''">
+            and t.zl in (${zlStr})
+        </if>
+        order by beyond desc
+    </select>
+</mapper>
