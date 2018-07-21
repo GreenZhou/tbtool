@@ -3,7 +3,7 @@
  "http://java.sun.com/dtd/web-app_2_3.dtd" >
 
 <web-app>
-    <display-name>广州市水务公共信息平台</display-name>
+    <display-name>TBTOOL</display-name>
 
 	<context-param>
 		<param-name>contextConfigLocation</param-name>

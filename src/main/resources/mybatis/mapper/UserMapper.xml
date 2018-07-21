@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.augurit.awater.dao.UserMapper">
+    <sql id="allColumns">
+        id,
+        login_name  loginName,
+        user_name userName,
+        passwd,
+        user_type userType
+    </sql>
+
+    <!-- 查询单个用户 -->
+    <select id="getUser" resultType="User">
+        select <include refid="allColumns" />
+        from tb_user
+        where login_name = #{loginName}
+    </select>
+
+    <!-- 查询用户列表 -->
+    <select id="findUserList" resultType="User">
+        select <include refid="allColumns" />
+        from tb_user
+        where user_type = #{userType}
+    </select>
+
+    <!-- 保存单个用户 -->
+    <insert id="saveUser">
+        insert into tb_user(id, login_name, user_name, passwd, user_type)
+        values(#{user.id}, #{user.loginName}, #{user.userName}, #{user.passwd}, #{user.userType})
+    </insert>
+
+    <!-- 删除单个用户 -->
+    <delete id="delUser">
+        delete from tb_user where id = #{id}
+        <if test="userType != null and userType != -1">
+          and user_type = #{userType}
+        </if>
+    </delete>
+
+    <!-- 修改单个用户信息 -->
+    <update id="updUser">
+        update tb_user
+        <set>
+            <if test="user.loginName != null and user.loginName != ''">
+                login_name = #{user.loginName},
+            </if>
+            <if test="user.userName != null and user.userName != ''">
+                user_name = #{user.userName},
+            </if>
+            <if test="user.passwd != null and user.passwd != ''">
+                passwd = #{user.passwd},
+            </if>
+        </set>
+        where id = #{user.id}
+        <if test="user.userType != null and user.userType != -1">
+          and user_type = #{user.userType}
+        </if>
+    </update>
+</mapper>

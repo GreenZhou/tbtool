@@ -26,6 +26,7 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 
 /**
@@ -47,8 +48,6 @@ public class PagePlugin implements Interceptor {
     private static final ObjectFactory DEFAULT_OBJECT_FACTORY = new DefaultObjectFactory();
     private static final ObjectWrapperFactory DEFAULT_OBJECT_WRAPPER_FACTORY = new DefaultObjectWrapperFactory();
     private static final ReflectorFactory DEFAULT_REFLECTOR_FACTORY = new DefaultReflectorFactory();
-
-
 
     @Override
     public Object intercept(Invocation invocation) throws Throwable {
@@ -80,8 +79,7 @@ public class PagePlugin implements Interceptor {
             metaStatementHandler.setValue("delegate.boundSql.sql", buildPageSql(boundSql.getSql(), page, dialect));
 
             // 采用物理分页后, 不需要mybatis的内存分页了
-            metaStatementHandler.setValue("delegate.rowBounds.offset",
-                    RowBounds.NO_ROW_OFFSET);
+                metaStatementHandler.setValue("delegate.rowBounds.offset", RowBounds.NO_ROW_OFFSET);
             metaStatementHandler.setValue("delegate.rowBounds.limit", RowBounds.NO_ROW_LIMIT);
         }
 
@@ -90,7 +88,7 @@ public class PagePlugin implements Interceptor {
 
     public void setPageParameter(Configuration configuration, BoundSql boundSql, MappedStatement mappedStatement,
                                  Connection conn, PageParameter page) {
-        String countSql = "select count(0) from ( " + boundSql.getSql() + " )";
+        String countSql = "select count(0) from ( " + boundSql.getSql() + " ) temp";
         PreparedStatement countStmt = null;
         ResultSet rs = null;
         try {
@@ -100,9 +98,22 @@ public class PagePlugin implements Interceptor {
                     new BoundSql(configuration, countSql, parameterMappings, boundSql.getParameterObject());
 
             if(parameterMappings != null) {
-                for(ParameterMapping parameterMapping : parameterMappings) {
-                    countBoundSql.setAdditionalParameter(parameterMapping.getProperty(),
-                            boundSql.getAdditionalParameter(parameterMapping.getProperty()));
+                for (ParameterMapping parameterMapping : parameterMappings) {
+                    if (boundSql.hasAdditionalParameter(parameterMapping.getProperty())) {
+                        countBoundSql.setAdditionalParameter(parameterMapping.getProperty(),
+                                boundSql.getAdditionalParameter(parameterMapping.getProperty()));
+                    } else {
+                        //  试着从parameterObject中获取对应value
+                        Object paramObj = boundSql.getParameterObject();
+                        if (paramObj != null) {
+                            if (paramObj instanceof Map) {
+                                countBoundSql.setAdditionalParameter(parameterMapping.getProperty(),
+                                        ((Map) paramObj).get(parameterMapping.getProperty()));
+                            } else {
+                                countBoundSql.setAdditionalParameter(parameterMapping.getProperty(), paramObj);
+                            }
+                        }
+                    }
                 }
             }
 

@@ -20,7 +20,7 @@
     <plugins>
         <plugin interceptor="com.augurit.awater.plugin.PagePlugin">
             <property name="pageIdMatch" value=".*List.*" />
-            <property name="dialect" value="ORACLE" />
+            <property name="dialect" value="MYSQL" />
         </plugin>
     </plugins>
 </configuration>

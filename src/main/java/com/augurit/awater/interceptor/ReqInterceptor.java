@@ -4,6 +4,7 @@ import com.augurit.awater.InProcessContext;
 import com.augurit.awater.RequestMsg;
 import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.ResponseMsg;
+import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
 import com.google.common.base.Charsets;
 import com.google.common.base.Strings;
@@ -38,7 +39,15 @@ public class ReqInterceptor implements HandlerInterceptor {
         try {
             requestMsg = new RequestMsg(reqData);
 
-	        // 请求响应消息上下文存储请求数据
+	        // 如果是非登录接口，对其进行token校验
+			if(!"/user/login".equals(req.getServletPath())) {
+				User user = (User) req.getSession().getAttribute(requestMsg.getToken());
+				if(user == null) {
+					throw new AppException(RespCodeMsgDepository.TOKEN_INVALID, "token无效");
+				}
+			}
+
+			// 请求响应消息上下文存储请求数据
 	        InProcessContext.setRequestMsg(requestMsg);
 
 	        // 请求响应消息上下文存储请求分页数据

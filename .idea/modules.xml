@@ -2,8 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/AWater.iml" filepath="$PROJECT_DIR$/AWater.iml" />
-      <module fileurl="file://$PROJECT_DIR$/awater.iml" filepath="$PROJECT_DIR$/awater.iml" />
+      <module fileurl="file://$PROJECT_DIR$/tbtool.iml" filepath="$PROJECT_DIR$/tbtool.iml" />
     </modules>
   </component>
 </project>

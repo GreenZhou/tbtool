@@ -12,7 +12,7 @@ import com.google.common.base.Strings;
  * 修改说明：
  */
 public class RequestMsg {
-    private String cmd;
+    private String token;
     private String pageNo;
     private String showSize;// 显示条目数
     private JSONObject content;
@@ -32,10 +32,7 @@ public class RequestMsg {
             throw new AppException(RespCodeMsgDepository.REQUEST_DATA_ERROR, "请求数据不能为空...");
         }
 
-        cmd = reqJson.getString("cmd");
-        if(Strings.isNullOrEmpty(cmd)) {
-            throw new AppException(RespCodeMsgDepository.REQUEST_DATA_ERROR, "请求命令字不能为空...");
-        }
+        token = reqJson.getString("token");
         pageNo = reqJson.getString("pageNo");
         showSize = reqJson.getString("showSize");
         content = reqJson.getJSONObject("content");
@@ -45,8 +42,8 @@ public class RequestMsg {
         return reqData;
     }
 
-    public String getCmd() {
-        return cmd;
+    public String getToken() {
+        return token;
     }
 
     public JSONObject getContent() {

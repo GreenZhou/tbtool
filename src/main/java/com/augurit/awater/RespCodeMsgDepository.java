@@ -12,9 +12,14 @@ public enum RespCodeMsgDepository {
     SUCCESS("0000", "响应成功"),
     SERVER_INTERNAL_ERROR("0001", "服务器内部系统错误"),
     SERVER_404_ERROR("0002", "资源未找到"),
-    REQUEST_DATA_ERROR("0003", "请求数据格式不正确");
-
-
+    REQUEST_DATA_ERROR("0003", "请求数据格式不正确"),
+    USER_LOGIN_ERROR("0004", "用户登录失败"),
+    USER_NOT_FOUND("0005", "该用户不存在"),
+    USER_LOGIN_FAIL("0006", "用户名或密码错误"),
+    USER_LOGOUT_FAIL("0007", "用户退出登录失败"),
+    TOKEN_INVALID("0008", "token无效"),
+    LACK_PRIVILEGIER("0009", "用户权限不够"),
+    ;
 
     private final String code;
     private final String message;

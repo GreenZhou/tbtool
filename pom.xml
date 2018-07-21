@@ -1,12 +1,11 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
   xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <groupId>com.augurit</groupId>
-  <artifactId>awater</artifactId>
+  <groupId>com.augurit.awater</groupId>
+  <artifactId>tbtool</artifactId>
   <packaging>war</packaging>
   <version>1.0</version>
-  <name>广州市水务公共信息平台</name>
-  <url>http://maven.apache.org</url>
+  <name></name>
 	<properties>
 		<Spring.Version>4.2.0.RELEASE</Spring.Version>
 		<Tomcat7.Version>2.2</Tomcat7.Version>
@@ -140,9 +139,9 @@
 	</dependency>
 
 	<dependency>
-	  <groupId>com.oracle</groupId>
-	  <artifactId>ojdbc6</artifactId>
-	  <version>11.2.0.3</version>
+	  <groupId>mysql</groupId>
+	  <artifactId>mysql-connector-java</artifactId>
+	  <version>5.1.38</version>
 	</dependency>
 
 	<!-- log4j日志框架配置 -->
@@ -153,7 +152,7 @@
 	</dependency>
   </dependencies>
   <build>
-    <finalName>awater</finalName>
+    <finalName>tbtool</finalName>
     <plugins>
 		<plugin>  
 			<artifactId>maven-compiler-plugin</artifactId>  
