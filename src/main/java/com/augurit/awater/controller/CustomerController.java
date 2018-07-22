@@ -6,6 +6,7 @@ import com.augurit.awater.DefaultIdGenerator;
 import com.augurit.awater.InProcessContext;
 import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.ResponseMsg;
+import com.augurit.awater.entity.Customer;
 import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
 import com.augurit.awater.service.ICustomer;
@@ -70,7 +71,7 @@ public class CustomerController {
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             Customer customer = new Customer();
-            customer.setId(defaultIdGenerator.getIdForStr());
+            customer.setId(DefaultIdGenerator.getIdForStr());
             customer.setCustomerName(content.getString("customerName"));
             customer.setQq(content.getString("qq"));
             icustomer.saveCustomer(customer);
@@ -117,8 +118,8 @@ public class CustomerController {
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             Customer customer = new Customer();
-            customer.setId(content.getString("id"));
             customer.setCustomerName(content.getString("customerName"));
+            customer.setId(content.getString("id"));
             customer.setQq(content.getString("qq"));
 
             icustomer.updCustomer(customer);

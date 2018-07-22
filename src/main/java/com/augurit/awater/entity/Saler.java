@@ -1,10 +1,9 @@
 package com.augurit.awater.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 public class Saler {
     private String id;
-    private String salerName;
+    private String salerName;//  店铺名称
+    private String salerTMName;//  店铺阿里旺旺名称
     private String url;
 
     public String getId() {
@@ -23,8 +22,16 @@ public class Saler {
         this.salerName = salerName;
     }
 
+    public String getSalerTMName() {
+        return salerTMName;
+    }
+
+    public void setSalerTMName(String salerTMName) {
+        this.salerTMName = salerTMName;
+    }
+
     public String getUrl() {
-        return userName;
+        return url;
     }
 
     public void setUrl(String url) {

@@ -1,9 +1,11 @@
 package com.augurit.awater.service.impl;
 
 import com.augurit.awater.RespCodeMsgDepository;
+import com.augurit.awater.dao.SalerMapper;
 import com.augurit.awater.dao.UserMapper;
 import com.augurit.awater.entity.Saler;
 import com.augurit.awater.exception.AppException;
+import com.augurit.awater.service.ISaler;
 import com.augurit.awater.service.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -24,7 +26,7 @@ public class SalerImpl implements ISaler {
 	private SalerMapper salerMapper;
 
 	@Override
-	public User getSaler(String id) throws AppException {
+	public Saler getSaler(String id) throws AppException {
 		Saler saler = null;
 
 		try {

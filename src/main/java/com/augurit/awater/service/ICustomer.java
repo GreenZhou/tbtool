@@ -2,6 +2,7 @@ package com.augurit.awater.service;
 
 import com.augurit.awater.entity.Customer;
 import com.augurit.awater.exception.AppException;
+import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 

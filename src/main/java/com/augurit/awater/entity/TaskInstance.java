@@ -2,6 +2,8 @@ package com.augurit.awater.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Date;
+
 public class TaskInstance {
     private String id;
     private String taskName;
@@ -11,6 +13,7 @@ public class TaskInstance {
     private String recieverName;
     private int minCustomerNum;
     private int realCustomerNum;
+    private int status;//  任务状态，0： 未发布 1： 已发布，但员工未处理 2： 已发布，但员工已经分派 3：已废弃
     private Date createTime;
 
     public String getId() {
@@ -59,5 +62,37 @@ public class TaskInstance {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public String getRecieverName() {
+        return recieverName;
+    }
+
+    public void setRecieverName(String recieverName) {
+        this.recieverName = recieverName;
+    }
+
+    public int getMinCustomerNum() {
+        return minCustomerNum;
+    }
+
+    public void setMinCustomerNum(int minCustomerNum) {
+        this.minCustomerNum = minCustomerNum;
+    }
+
+    public int getRealCustomerNum() {
+        return realCustomerNum;
+    }
+
+    public void setRealCustomerNum(int realCustomerNum) {
+        this.realCustomerNum = realCustomerNum;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
     }
 }

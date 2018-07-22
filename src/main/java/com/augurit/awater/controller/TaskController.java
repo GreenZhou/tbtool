@@ -9,6 +9,7 @@ import com.augurit.awater.ResponseMsg;
 import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
 import com.augurit.awater.service.ITask;
+import com.augurit.awater.service.IUser;
 import com.google.common.base.Strings;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
@@ -36,110 +37,6 @@ public class TaskController {
     private ITask itask;
 
     @Autowired
-    private IUser iuser;    
+    private IUser iuser;
 
-    @RequestMapping("/list")
-    @ResponseBody
-    public void listTasks(HttpServletRequest req) {
-        ResponseMsg responseMsg = null;
-        try {
-            if(checkUserPriv(req)) {
-                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
-                return;
-            }
-
-            JSONArray customers = (JSONArray) JSONArray.toJSON(icustomer.findCustomerList());
-            JSONObject ret = new JSONObject();
-            ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
-            ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
-            ret.put("list", customers);
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, ret);
-        } catch (Exception e) {
-            LOGGER.error("买家信息查询失败", e);
-            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
-        } finally {
-            InProcessContext.setResponseMsg(responseMsg);
-        }
-    }
-
-    @RequestMapping("/save")
-    @ResponseBody
-    public void saveCustomer(HttpServletRequest req) {
-        ResponseMsg responseMsg = null;
-        try {
-            if(checkUserPriv(req)) {
-                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
-                return;
-            }
-
-            JSONObject content = InProcessContext.getRequestMsg().getContent();
-            Customer customer = new Customer();
-            customer.setId(defaultIdGenerator.getIdForStr());
-            customer.setCustomerName(content.getString("customerName"));
-            customer.setQq(content.getString("qq"));
-            icustomer.saveCustomer(customer);
-
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
-        } catch (Exception e) {
-            LOGGER.error("买家信息保存失败", e);
-            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
-        } finally {
-            InProcessContext.setResponseMsg(responseMsg);
-        }
-    }
-
-    @RequestMapping("/del")
-    @ResponseBody
-    public void delCustomer(HttpServletRequest req) {
-        ResponseMsg responseMsg = null;
-        try {
-            if(checkUserPriv(req)) {
-                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
-                return;
-            }
-
-            JSONObject content = InProcessContext.getRequestMsg().getContent();
-            icustomer.delCustomer(content.getString("id"));
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
-        } catch (Exception e) {
-            LOGGER.error("买家信息删除失败", e);
-            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
-        } finally {
-            InProcessContext.setResponseMsg(responseMsg);
-        }
-    }
-
-    @RequestMapping("/update")
-    @ResponseBody
-    public void updSaler(HttpServletRequest req) {
-        ResponseMsg responseMsg = null;
-        try {
-            if(checkUserPriv(req)) {
-                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
-                return;
-            }
-
-            JSONObject content = InProcessContext.getRequestMsg().getContent();
-            Customer customer = new Customer();
-            customer.setId(content.getString("id"));
-            customer.setCustomerName(content.getString("customerName"));
-            customer.setQq(content.getString("qq"));
-
-            icustomer.updCustomer(customer);
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
-        } catch (Exception e) {
-            LOGGER.error("买家信息更新失败", e);
-            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
-        } finally {
-            InProcessContext.setResponseMsg(responseMsg);
-        }
-    }
-
-    // ToDo 这段有点难以理解
-    private boolean checkUserPriv(HttpServletRequest req) {
-        String token = InProcessContext.getRequestMsg().getToken();
-        // ToDo 校验请求报文中数据
-        User user = (User) req.getSession().getAttribute(token);
-        return user.getUserType() == STAFF;
-    }
 }

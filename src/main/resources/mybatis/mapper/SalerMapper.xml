@@ -5,6 +5,7 @@
     <sql id="allColumns">
         id,
         saler_name salerName,
+        saler_tm_name salerTMName,
         url url
     </sql>
 
@@ -23,8 +24,8 @@
 
     <!-- 保存单个商家信息 -->
     <insert id="saveSaler">
-        insert into tb_saler(id, saler_name, url)
-        values(#{saler.id}, #{saler.salerName}, #{saler.url})
+        insert into tb_saler(id, saler_name, saler_tm_name, url)
+        values(#{saler.id}, #{saler.salerName}, #{saler.salerTMName}, #{saler.url})
     </insert>
 
     <!-- 删除单个商家信息 -->
@@ -38,6 +39,9 @@
         <set>
             <if test="saler.salerName != null and saler.salerName != ''">
                 saler_name = #{saler.salerName},
+            </if>
+            <if test="saler.salerTMName != null and saler.salerTMName != ''">
+                saler_tm_name = #{saler.salerTMName},
             </if>
             <if test="saler.url != null and saler.url != ''">
                 url = #{saler.url},

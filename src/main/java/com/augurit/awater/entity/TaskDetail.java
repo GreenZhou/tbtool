@@ -2,6 +2,8 @@ package com.augurit.awater.entity;
 
 import com.alibaba.fastjson.annotation.JSONField;
 
+import java.util.Date;
+
 public class TaskDetail {
     private String id;
     private String taskId;
@@ -12,7 +14,8 @@ public class TaskDetail {
     private int taskNum;
     private String taskDetailName;
     private String taskDesc;
-    private double taskPrice;
+    private double taskUnitPrice;
+    private double taskTotalPrice;
     private Date createTime;
 
     public String getId() {
@@ -36,7 +39,7 @@ public class TaskDetail {
     }
 
     public void setTaskDetailName(String taskDetailName) {
-        this.taskDetailName = taskDtailName;
+        this.taskDetailName = taskDetailName;
     }
 
     public String getCustomerId() {
@@ -87,12 +90,20 @@ public class TaskDetail {
         return taskDesc;
     }
 
-    public double getTaskPrice() {
-        return taskPrice;
+    public double getTaskUnitPrice() {
+        return taskUnitPrice;
     }
 
-    public void setTaskPrice(double taskPrice) {
-        this.taskPrice = taskPrice;
+    public void setTaskUnitPrice(double taskUnitPrice) {
+        this.taskUnitPrice = taskUnitPrice;
+    }
+
+    public double getTaskTotalPrice() {
+        return taskTotalPrice;
+    }
+
+    public void setTaskTotalPrice(double taskTotalPrice) {
+        this.taskTotalPrice = taskTotalPrice;
     }
 
     public Date getCreateTime() {

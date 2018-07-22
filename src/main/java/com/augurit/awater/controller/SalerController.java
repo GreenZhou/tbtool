@@ -6,6 +6,7 @@ import com.augurit.awater.DefaultIdGenerator;
 import com.augurit.awater.InProcessContext;
 import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.ResponseMsg;
+import com.augurit.awater.entity.Saler;
 import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
 import com.augurit.awater.service.IUser;
@@ -70,8 +71,9 @@ public class SalerController {
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             Saler saler = new Saler();
-            saler.setId(defaultIdGenerator.getIdForStr());
+            saler.setId(DefaultIdGenerator.getIdForStr());
             saler.setSalerName(content.getString("salerName"));
+            saler.setSalerTMName(content.getString("salerTMName"));
             saler.setUrl(content.getString("url"));
             isaler.saveSaler(saler);
 
@@ -120,8 +122,9 @@ public class SalerController {
             saler.setId(content.getString("id"));
             saler.setSalerName(content.getString("salerName"));
             saler.setUrl(content.getString("url"));
+            saler.setSalerTMName(content.getString("salerTMName"));
 
-            isaler.updSaler(saker);
+            isaler.updSaler(saler);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
             LOGGER.error("商家信息更新失败", e);

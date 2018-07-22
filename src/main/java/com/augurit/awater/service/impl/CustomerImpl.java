@@ -4,6 +4,7 @@ import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.dao.CustomerMapper;
 import com.augurit.awater.entity.Customer;
 import com.augurit.awater.exception.AppException;
+import com.augurit.awater.service.ICustomer;
 import com.augurit.awater.service.IUser;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
@@ -18,7 +19,7 @@ import java.util.Map;
  * 修改说明：
  */
 @Service
-public class Customermpl implements ICustomer {
+public class CustomerImpl implements ICustomer {
 
 	@Autowired
 	private CustomerMapper customerMapper;
