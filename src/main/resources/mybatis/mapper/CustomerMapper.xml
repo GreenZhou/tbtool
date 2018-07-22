@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.augurit.awater.dao.CustomerMapper">
+    <sql id="allColumns">
+        id,
+        customer_name customerName,
+        qq
+    </sql>
+
+    <!-- 查询单个买家信息 -->
+    <select id="getCustomer" resultType="Customer">
+        select <include refid="allColumns" />
+        from tb_customer
+        where id = #{id}
+    </select>
+
+    <!-- 查询买家信息列表 -->
+    <select id="findCustomerList" resultType="Customer">
+        select <include refid="allColumns" />
+        from tb_customer
+    </select>
+
+    <!-- 保存单个买家信息 -->
+    <insert id="saveCustomer">
+        insert into tb_customer(id, customer_name, qq)
+        values(#{customer.id}, #{customer.customerName}, #{customer.qq})
+    </insert>
+
+    <!-- 删除单个买家信息 -->
+    <delete id="delCustomer">
+        delete from tb_customer where id = #{id}
+    </delete>
+
+    <!-- 修改单个买家信息 -->
+    <update id="updCustomer">
+        update tb_customer
+        <set>
+            <if test="customer.customerName != null and customer.customerName != ''">
+                customer_name = #{customer.customerName},
+            </if>
+            <if test="customer.qq != null and customer.qq != ''">
+                qq = #{customer.qq},
+            </if>
+        </set>
+        where id = #{customer.id}
+    </update>
+</mapper>

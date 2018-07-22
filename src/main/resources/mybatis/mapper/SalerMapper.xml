@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.augurit.awater.dao.SalerMapper">
+    <sql id="allColumns">
+        id,
+        saler_name salerName,
+        url url
+    </sql>
+
+    <!-- 查询单个商家信息 -->
+    <select id="getSaler" resultType="Saler">
+        select <include refid="allColumns" />
+        from tb_saler
+        where id = #{id}
+    </select>
+
+    <!-- 查询商家信息列表 -->
+    <select id="findSalerList" resultType="Saler">
+        select <include refid="allColumns" />
+        from tb_saler
+    </select>
+
+    <!-- 保存单个商家信息 -->
+    <insert id="saveSaler">
+        insert into tb_saler(id, saler_name, url)
+        values(#{saler.id}, #{saler.salerName}, #{saler.url})
+    </insert>
+
+    <!-- 删除单个商家信息 -->
+    <delete id="delSaler">
+        delete from tb_saler where id = #{id}
+    </delete>
+
+    <!-- 修改单个商家信息 -->
+    <update id="updSaler">
+        update tb_saler
+        <set>
+            <if test="saler.salerName != null and saler.salerName != ''">
+                saler_name = #{saler.salerName},
+            </if>
+            <if test="saler.url != null and saler.url != ''">
+                url = #{saler.url},
+            </if>
+        </set>
+        where id = #{saler.id}
+    </update>
+</mapper>
