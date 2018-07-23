@@ -1,10 +1,13 @@
 package com.augurit.awater.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 import java.util.Date;
 
 public class TaskDetail {
+    public static final int NOT_CLAIMED = 0;
+    public static final int IS_CLAIMED = 1;
+    public static final int IS_COMPLISHED = 2;
+    public static final int IS_ABANDONED = 3;
+
     private String id;
     private String taskId;
     private String customerId;
@@ -16,6 +19,8 @@ public class TaskDetail {
     private String taskDesc;
     private double taskUnitPrice;
     private double taskTotalPrice;
+    private double realTotalPrice;
+    private int status;// 任务状态，0: 未认领 1：已认领 2：已完成 3：已废弃
     private Date createTime;
 
     public String getId() {
@@ -112,5 +117,21 @@ public class TaskDetail {
 
     public void setCreateTime(Date createTime) {
         this.createTime = createTime;
+    }
+
+    public int getStatus() {
+        return status;
+    }
+
+    public void setStatus(int status) {
+        this.status = status;
+    }
+
+    public double getRealTotalPrice() {
+        return realTotalPrice;
+    }
+
+    public void setRealTotalPrice(double realTotalPrice) {
+        this.realTotalPrice = realTotalPrice;
     }
 }

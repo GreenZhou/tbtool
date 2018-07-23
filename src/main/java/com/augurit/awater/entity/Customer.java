@@ -1,7 +1,5 @@
 package com.augurit.awater.entity;
 
-import com.alibaba.fastjson.annotation.JSONField;
-
 public class Customer {
     private String id;
     private String customerName;

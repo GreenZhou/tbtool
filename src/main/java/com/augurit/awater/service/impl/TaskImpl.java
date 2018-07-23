@@ -11,6 +11,11 @@ import java.util.List;
 @Service
 public class TaskImpl implements ITask {
     @Override
+    public TaskInstance getTaskInstance(String id) throws AppException {
+        return null;
+    }
+
+    @Override
     public void saveTaskInstance(TaskInstance instance) throws AppException {
 
     }
@@ -21,7 +26,7 @@ public class TaskImpl implements ITask {
     }
 
     @Override
-    public List<TaskInstance> findTaskInstanceList(String userId) throws AppException {
+    public List<TaskInstance> findTaskInstanceList(String recieverId, String creatorId) throws AppException {
         return null;
     }
 

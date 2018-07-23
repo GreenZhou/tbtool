@@ -10,12 +10,13 @@ import org.apache.ibatis.annotations.Param;
 import java.util.List;
 
 public interface ITask {
+    TaskInstance getTaskInstance(String id) throws AppException;
     //  创建任务实例
     void saveTaskInstance(TaskInstance instance) throws AppException;
     //  发布任务实例
     void publishTaskInstance(String id, List<TaskDetail> details) throws AppException;
     //  查询所有的自己有权限任务实例
-    List<TaskInstance> findTaskInstanceList(String userId) throws AppException;
+    List<TaskInstance> findTaskInstanceList(String recieverId, String creatorId) throws AppException;
     // 更新任务实例（仅仅在没发布、发布后没被处理才可以执行删除操作）
     void updateTaskInstance(TaskInstance instance) throws AppException;
     // 删除任务实例（仅仅在没发布、发布后没被处理才可以执行删除操作）
