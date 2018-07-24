@@ -19,8 +19,9 @@ public enum RespCodeMsgDepository {
     USER_LOGOUT_FAIL("0007", "用户退出登录失败"),
     TOKEN_INVALID("0008", "token无效"),
     LACK_PRIVILEGIER("0009", "用户权限不够"),
-    DELETE_TASK_ERROR("0010", "任务已经被认领分派出去，无法删除"),
-    ABANDON_TASK_ERROR("0011", "任务已经被认领了，无法废弃"),
+    DELETE_TASK_ERROR("0010", "任务已经发布，无法删除"),
+    ABANDON_TASK_ERROR("0011", "任务已经发布，无法废弃"),
+    SAVE_TASK_ERROR("0012", "任务已经发布，无法新增"),
     ;
 
     private final String code;

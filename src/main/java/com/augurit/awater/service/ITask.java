@@ -26,7 +26,15 @@ public interface ITask {
     //  指派具体买家
     void assignTaskInstance(String id, List<String> customerIds, int customerNum) throws AppException;
     //  查询具体的任务明细
-    List<TaskDetail> findTaskDetailList(String userId, String instanceId) throws AppException;
+    List<TaskDetail> findTaskDetailList(User user, String instanceId, List<String> excludeCols) throws AppException;
     //  更新具体的任务明细
     void updTaskDetail(TaskDetail detail) throws AppException;
+    // 删除具体的任务明细
+    void delTaskDetail(String id, String instanceId) throws AppException;
+    // 保存具体的任务明细
+    void saveTaskDetail(TaskDetail detail) throws AppException;
+    // 发布任务明细
+    void publishTaskDetail(User user, String instanceId) throws AppException;
+    // 废弃任务明细
+    void abandonTaskDetail(User user, String instanceId, String id) throws AppException;
 }

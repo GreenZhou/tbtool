@@ -2,6 +2,7 @@ package com.augurit.awater.service.impl;
 
 import com.augurit.awater.entity.TaskDetail;
 import com.augurit.awater.entity.TaskInstance;
+import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
 import com.augurit.awater.service.ITask;
 import org.springframework.stereotype.Service;
@@ -51,12 +52,32 @@ public class TaskImpl implements ITask {
     }
 
     @Override
-    public List<TaskDetail> findTaskDetailList(String userId, String instanceId) throws AppException {
+    public List<TaskDetail> findTaskDetailList(User user, String instanceId, List<String> excludeCols) throws AppException {
         return null;
     }
 
     @Override
     public void updTaskDetail(TaskDetail detail) throws AppException {
+
+    }
+
+    @Override
+    public void delTaskDetail(String id, String instanceId) throws AppException {
+
+    }
+
+    @Override
+    public void saveTaskDetail(TaskDetail detail) throws AppException {
+
+    }
+
+    @Override
+    public void publishTaskDetail(User user, String instanceId) throws AppException {
+
+    }
+
+    @Override
+    public void abandonTaskDetail(User user, String instanceId, String id) throws AppException {
 
     }
 }

@@ -5,8 +5,8 @@ import java.util.List;
 
 public class TaskInstance {
     public static final int NOT_PUBLISHED = 0;
-    public static final int NOT_ASSIGNED = 1;
-    public static final int IS_ASSIGNED = 2;
+    public static final int IS_ASSIGNED = 1;
+    public static final int IS_COMPLISHED = 2;
     public static final int IS_ABANDONED = 3;
 
     private String id;
@@ -17,7 +17,7 @@ public class TaskInstance {
     private String recieverName;
     private int minCustomerNum;
     private int realCustomerNum;
-    private int status;//  任务状态，0： 未发布 1： 已发布，但员工未处理 2： 已发布，但员工已经分派 3：已废弃
+    private int status;//  任务状态，0：未发布 1：已发布 2: 已完成 3：已废弃
     private Date createTime;
     private List<TaskDetail> details;
 

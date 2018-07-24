@@ -19,7 +19,8 @@ public class TaskDetail {
     private String taskDesc;
     private double taskUnitPrice;
     private double taskTotalPrice;
-    private double realTotalPrice;
+    private double totalCommission;
+    private double customerCommission;
     private int status;// 任务状态，0: 未认领 1：已认领 2：已完成 3：已废弃
     private Date createTime;
 
@@ -127,11 +128,19 @@ public class TaskDetail {
         this.status = status;
     }
 
-    public double getRealTotalPrice() {
-        return realTotalPrice;
+    public double getTotalCommission() {
+        return totalCommission;
     }
 
-    public void setRealTotalPrice(double realTotalPrice) {
-        this.realTotalPrice = realTotalPrice;
+    public void setTotalCommission(double totalCommission) {
+        this.totalCommission = totalCommission;
+    }
+
+    public double getCustomerCommission() {
+        return customerCommission;
+    }
+
+    public void setCustomerCommission(double customerCommission) {
+        this.customerCommission = customerCommission;
     }
 }
