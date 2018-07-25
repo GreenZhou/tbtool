@@ -3,13 +3,9 @@
   <component name="ChangeListManager">
     <list default="true" readonly="true" id="54148547-6f36-44bb-aec5-b018cc9c9d22" name="Default" comment="">
       <change beforePath="$PROJECT_DIR$/.idea/workspace.xml" afterPath="$PROJECT_DIR$/.idea/workspace.xml" />
-      <change beforePath="$PROJECT_DIR$/doc/tbtool.docx" afterPath="$PROJECT_DIR$/doc/tbtool.docx" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/RespCodeMsgDepository.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/RespCodeMsgDepository.java" />
+      <change beforePath="$PROJECT_DIR$/pom.xml" afterPath="$PROJECT_DIR$/pom.xml" />
       <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskDetail.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskDetail.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskInstance.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskInstance.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ITask.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ITask.java" />
-      <change beforePath="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java" afterPath="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java" />
+      <change beforePath="$PROJECT_DIR$/tbtool.iml" afterPath="$PROJECT_DIR$/tbtool.iml" />
     </list>
     <ignored path="AWater.iws" />
     <ignored path=".idea/workspace.xml" />
@@ -46,8 +42,8 @@
       <file leaf-file-name="SalerController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/SalerController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="424">
-              <caret line="132" column="0" lean-forward="true" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
+            <state relative-caret-position="931">
+              <caret line="132" column="0" lean-forward="false" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#listSalers#0;class#SalerController#0" expanded="false" />
@@ -62,8 +58,8 @@
       <file leaf-file-name="TaskController.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-57">
-              <caret line="326" column="104" lean-forward="false" selection-start-line="326" selection-start-column="104" selection-end-line="326" selection-end-column="104" />
+            <state relative-caret-position="418">
+              <caret line="234" column="13" lean-forward="false" selection-start-line="234" selection-start-column="13" selection-end-line="234" selection-end-column="13" />
               <folding>
                 <element signature="imports" expanded="true" />
                 <element signature="method#listTaskInstances#0;class#TaskController#0" expanded="false" />
@@ -72,12 +68,46 @@
                 <element signature="method#abandonTaskInstance#0;class#TaskController#0" expanded="false" />
                 <element signature="method#publishTaskInstance#0;class#TaskController#0" expanded="false" />
                 <element signature="method#listTaskDetails#0;class#TaskController#0" expanded="false" />
-                <element signature="e#9098#9106#0" expanded="true" />
                 <element signature="method#updTaskDetail#0;class#TaskController#0" expanded="false" />
                 <element signature="method#delTaskDetail#0;class#TaskController#0" expanded="false" />
+                <element signature="method#abandonTaskDetail#0;class#TaskController#0" expanded="false" />
                 <element signature="method#saveTaskDetail#0;class#TaskController#0" expanded="false" />
+                <element signature="method#publishTaskDetail#0;class#TaskController#0" expanded="false" />
                 <element signature="method#checkUserAdmin#0;class#TaskController#0" expanded="false" />
+                <element signature="method#checkUserStaff#0;class#TaskController#0" expanded="false" />
               </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="pom.xml" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/pom.xml">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="433">
+              <caret line="163" column="4" lean-forward="false" selection-start-line="163" selection-start-column="4" selection-end-line="163" selection-end-column="4" />
+              <folding>
+                <element signature="n#build#0;n#project#0;n#!!top" expanded="false" />
+              </folding>
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="CompressImpl.java" pinned="false" current-in-tab="false">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/compress/CompressImpl.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="38">
+              <caret line="2" column="25" lean-forward="false" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+              <folding />
+            </state>
+          </provider>
+        </entry>
+      </file>
+      <file leaf-file-name="ICompress.java" pinned="false" current-in-tab="true">
+        <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/compress/ICompress.java">
+          <provider selected="true" editor-type-id="text-editor">
+            <state relative-caret-position="38">
+              <caret line="2" column="22" lean-forward="false" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
+              <folding />
             </state>
           </provider>
         </entry>
@@ -85,7 +115,7 @@
       <file leaf-file-name="TaskDetail.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskDetail.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="323">
+            <state relative-caret-position="437">
               <caret line="23" column="22" lean-forward="false" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="22" />
               <folding>
                 <element signature="e#2721#2722#0" expanded="true" />
@@ -108,7 +138,7 @@
       <file leaf-file-name="RespCodeMsgDepository.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/RespCodeMsgDepository.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="380">
+            <state relative-caret-position="437">
               <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="19" />
               <folding />
             </state>
@@ -118,18 +148,18 @@
       <file leaf-file-name="ITask.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ITask.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="410">
+            <state relative-caret-position="570">
               <caret line="37" column="13" lean-forward="false" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
               <folding />
             </state>
           </provider>
         </entry>
       </file>
-      <file leaf-file-name="TaskImpl.java" pinned="false" current-in-tab="true">
+      <file leaf-file-name="TaskImpl.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="817">
-              <caret line="50" column="0" lean-forward="true" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+            <state relative-caret-position="285">
+              <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
               <folding />
             </state>
           </provider>
@@ -138,7 +168,7 @@
       <file leaf-file-name="TaskInstance.java" pinned="false" current-in-tab="false">
         <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskInstance.java">
           <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="-203">
+            <state relative-caret-position="380">
               <caret line="21" column="36" lean-forward="false" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="36" />
               <folding>
                 <element signature="imports" expanded="true" />
@@ -147,26 +177,6 @@
                 <element signature="e#2412#2413#0" expanded="true" />
                 <element signature="e#2450#2451#0" expanded="true" />
               </folding>
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="Saler.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/Saler.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="38">
-              <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-              <folding />
-            </state>
-          </provider>
-        </entry>
-      </file>
-      <file leaf-file-name="ReqInterceptor.java" pinned="false" current-in-tab="false">
-        <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/interceptor/ReqInterceptor.java">
-          <provider selected="true" editor-type-id="text-editor">
-            <state relative-caret-position="570">
-              <caret line="47" column="13" lean-forward="false" selection-start-line="47" selection-start-column="13" selection-end-line="47" selection-end-column="13" />
-              <folding />
             </state>
           </provider>
         </entry>
@@ -211,7 +221,6 @@
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/aop/AppExceptionHandler.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/SubjectController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/ResponseMsg.java" />
-        <option value="$PROJECT_DIR$/pom.xml" />
         <option value="$PROJECT_DIR$/src/main/webapp/WEB-INF/web.xml" />
         <option value="$PROJECT_DIR$/src/main/resources/mybatis/config/mybatis_config.xml" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ISubject.java" />
@@ -247,8 +256,9 @@
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/RespCodeMsgDepository.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/SalerController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ITask.java" />
-        <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java" />
         <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java" />
+        <option value="$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java" />
+        <option value="$PROJECT_DIR$/pom.xml" />
       </list>
     </option>
   </component>
@@ -286,7 +296,7 @@
       </PATH>
     </treeState>
   </component>
-  <component name="ProjectFrameBounds">
+  <component name="ProjectFrameBounds" extendedState="1">
     <option name="x" value="-8" />
     <option name="y" value="-8" />
     <option name="width" value="1370" />
@@ -310,8 +320,9 @@
       <foldersAlwaysOnTop value="true" />
     </navigator>
     <panes>
+      <pane id="Scratches" />
       <pane id="Scope" />
-      <pane id="AndroidView" />
+      <pane id="PackagesPane" />
       <pane id="ProjectPane">
         <subPane>
           <expand>
@@ -357,31 +368,20 @@
               <item name="main" type="462c0819:PsiDirectoryNode" />
               <item name="java" type="462c0819:PsiDirectoryNode" />
               <item name="awater" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-            </path>
-            <path>
-              <item name="tbtool" type="b2602c69:ProjectViewProjectNode" />
-              <item name="tbtool" type="462c0819:PsiDirectoryNode" />
-              <item name="src" type="462c0819:PsiDirectoryNode" />
-              <item name="main" type="462c0819:PsiDirectoryNode" />
-              <item name="java" type="462c0819:PsiDirectoryNode" />
-              <item name="awater" type="462c0819:PsiDirectoryNode" />
-              <item name="service" type="462c0819:PsiDirectoryNode" />
-              <item name="impl" type="462c0819:PsiDirectoryNode" />
+              <item name="compress" type="462c0819:PsiDirectoryNode" />
             </path>
           </expand>
           <select />
         </subPane>
       </pane>
-      <pane id="Scratches" />
-      <pane id="PackagesPane" />
+      <pane id="AndroidView" />
     </panes>
   </component>
   <component name="PropertiesComponent">
     <property name="aspect.path.notification.shown" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
     <property name="js-jscs-nodeInterpreter" value="/usr/local/bin/node" />
-    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../agsupport_5.0" />
+    <property name="last_opened_file_path" value="$PROJECT_DIR$/../../agsupport" />
     <property name="project.structure.last.edited" value="SDKs" />
     <property name="project.structure.proportion" value="0.15" />
     <property name="project.structure.side.proportion" value="0.33936262" />
@@ -1025,7 +1025,8 @@
       <workItem from="1532272305907" duration="9527000" />
       <workItem from="1532326531984" duration="3849000" />
       <workItem from="1532338777890" duration="3047000" />
-      <workItem from="1532396860195" duration="16580000" />
+      <workItem from="1532396860195" duration="16820000" />
+      <workItem from="1532492829263" duration="2777000" />
     </task>
     <task id="LOCAL-00001" summary="提交说明： 增加mybatis配置和jdbc配置、日志框架、基本包&#10;提 交 人： 周卫鹏">
       <created>1508204878062</created>
@@ -1118,14 +1119,21 @@
       <option name="project" value="LOCAL" />
       <updated>1508896395474</updated>
     </task>
-    <option name="localTasksCounter" value="14" />
+    <task id="LOCAL-00014" summary="任务API接口完善">
+      <created>1532425661843</created>
+      <option name="number" value="00014" />
+      <option name="presentableId" value="LOCAL-00014" />
+      <option name="project" value="LOCAL" />
+      <updated>1532425661843</updated>
+    </task>
+    <option name="localTasksCounter" value="15" />
     <servers />
   </component>
   <component name="TimeTrackingManager">
-    <option name="totallyTimeSpent" value="159816000" />
+    <option name="totallyTimeSpent" value="162833000" />
   </component>
   <component name="ToolWindowManager">
-    <frame x="-8" y="-8" width="1370" height="772" extended-state="0" />
+    <frame x="-8" y="-8" width="1370" height="772" extended-state="1" />
     <layout>
       <window_info id="Palette" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="false" content_ui="tabs" />
       <window_info id="TODO" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
@@ -1141,7 +1149,7 @@
       <window_info id="Terminal" active="false" anchor="bottom" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.65692306" sideWeight="0.5" order="12" side_tool="false" content_ui="tabs" />
       <window_info id="Capture Tool" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="6" side_tool="false" content_ui="tabs" />
       <window_info id="Designer" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="4" side_tool="false" content_ui="tabs" />
-      <window_info id="Project" active="true" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.2832061" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
+      <window_info id="Project" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="true" show_stripe_button="true" weight="0.28778625" sideWeight="0.5" order="0" side_tool="false" content_ui="combo" />
       <window_info id="Web" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.33" sideWeight="0.5" order="3" side_tool="true" content_ui="tabs" />
       <window_info id="Database" active="false" anchor="right" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.32980332" sideWeight="0.5" order="8" side_tool="false" content_ui="tabs" />
       <window_info id="Structure" active="false" anchor="left" auto_hide="false" internal_type="DOCKED" type="DOCKED" visible="false" show_stripe_button="true" weight="0.25" sideWeight="0.5" order="1" side_tool="false" content_ui="tabs" />
@@ -1217,7 +1225,8 @@
     <MESSAGE value="提交说明： 日志BUG修改&#10;提 交 人： 周卫鹏" />
     <MESSAGE value="提交说明： 异常处理优化&#10;提 交 人： 周卫鹏" />
     <MESSAGE value="提交说明： JDK将至1.7，1.6版本&#10;提 交 人： 周卫鹏" />
-    <option name="LAST_COMMIT_MESSAGE" value="提交说明： JDK将至1.7，1.6版本&#10;提 交 人： 周卫鹏" />
+    <MESSAGE value="任务API接口完善" />
+    <option name="LAST_COMMIT_MESSAGE" value="任务API接口完善" />
   </component>
   <component name="XDebuggerManager">
     <breakpoint-manager>
@@ -1230,16 +1239,6 @@
     <option name="FILTER_TARGETS" value="false" />
   </component>
   <component name="editorHistoryManager">
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/SubjectImpl.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/dao/SubjectMapper.java" />
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/package-info.java">
-      <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="18">
-          <caret line="1" column="24" lean-forward="false" selection-start-line="1" selection-start-column="24" selection-end-line="1" selection-end-column="24" />
-          <folding />
-        </state>
-      </provider>
-    </entry>
     <entry file="jar://G:/soft/java/jdk1.7/src.zip!/java/lang/RuntimeException.java" />
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/SubjectController.java" />
     <entry file="jar://$MAVEN_REPOSITORY$/com/alibaba/fastjson/1.2.8/fastjson-1.2.8.jar!/com/alibaba/fastjson/JSONObject.class">
@@ -1360,9 +1359,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="162">
           <caret line="9" column="17" lean-forward="false" selection-start-line="9" selection-start-column="17" selection-end-line="9" selection-end-column="17" />
-          <folding>
-            <element signature="imports" expanded="false" />
-          </folding>
         </state>
       </provider>
     </entry>
@@ -1395,7 +1391,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="190">
           <caret line="10" column="44" lean-forward="true" selection-start-line="10" selection-start-column="44" selection-end-line="10" selection-end-column="44" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1417,7 +1412,6 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="38">
           <caret line="2" column="13" lean-forward="false" selection-start-line="2" selection-start-column="13" selection-end-line="2" selection-end-column="13" />
-          <folding />
         </state>
       </provider>
     </entry>
@@ -1441,13 +1435,12 @@
       <provider selected="true" editor-type-id="text-editor">
         <state relative-caret-position="0">
           <caret line="0" column="0" lean-forward="false" selection-start-line="0" selection-start-column="0" selection-end-line="0" selection-end-column="0" />
-          <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/RespCodeMsgDepository.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="380">
+        <state relative-caret-position="437">
           <caret line="23" column="19" lean-forward="false" selection-start-line="23" selection-start-column="4" selection-end-line="23" selection-end-column="19" />
           <folding />
         </state>
@@ -1455,7 +1448,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskDetail.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="323">
+        <state relative-caret-position="437">
           <caret line="23" column="22" lean-forward="false" selection-start-line="23" selection-start-column="16" selection-end-line="23" selection-end-column="22" />
           <folding>
             <element signature="e#2721#2722#0" expanded="true" />
@@ -1476,7 +1469,7 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/entity/TaskInstance.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-203">
+        <state relative-caret-position="380">
           <caret line="21" column="36" lean-forward="false" selection-start-line="21" selection-start-column="29" selection-end-line="21" selection-end-column="36" />
           <folding>
             <element signature="imports" expanded="true" />
@@ -1490,8 +1483,8 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/SalerController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="424">
-          <caret line="132" column="0" lean-forward="true" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
+        <state relative-caret-position="931">
+          <caret line="132" column="0" lean-forward="false" selection-start-line="132" selection-start-column="0" selection-end-line="132" selection-end-column="0" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#listSalers#0;class#SalerController#0" expanded="false" />
@@ -1504,16 +1497,24 @@
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/ITask.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="410">
+        <state relative-caret-position="570">
           <caret line="37" column="13" lean-forward="false" selection-start-line="37" selection-start-column="13" selection-end-line="37" selection-end-column="13" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="285">
+          <caret line="22" column="0" lean-forward="false" selection-start-line="22" selection-start-column="0" selection-end-line="22" selection-end-column="0" />
           <folding />
         </state>
       </provider>
     </entry>
     <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/controller/TaskController.java">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="-57">
-          <caret line="326" column="104" lean-forward="false" selection-start-line="326" selection-start-column="104" selection-end-line="326" selection-end-column="104" />
+        <state relative-caret-position="418">
+          <caret line="234" column="13" lean-forward="false" selection-start-line="234" selection-start-column="13" selection-end-line="234" selection-end-column="13" />
           <folding>
             <element signature="imports" expanded="true" />
             <element signature="method#listTaskInstances#0;class#TaskController#0" expanded="false" />
@@ -1522,19 +1523,39 @@
             <element signature="method#abandonTaskInstance#0;class#TaskController#0" expanded="false" />
             <element signature="method#publishTaskInstance#0;class#TaskController#0" expanded="false" />
             <element signature="method#listTaskDetails#0;class#TaskController#0" expanded="false" />
-            <element signature="e#9098#9106#0" expanded="true" />
             <element signature="method#updTaskDetail#0;class#TaskController#0" expanded="false" />
             <element signature="method#delTaskDetail#0;class#TaskController#0" expanded="false" />
+            <element signature="method#abandonTaskDetail#0;class#TaskController#0" expanded="false" />
             <element signature="method#saveTaskDetail#0;class#TaskController#0" expanded="false" />
+            <element signature="method#publishTaskDetail#0;class#TaskController#0" expanded="false" />
             <element signature="method#checkUserAdmin#0;class#TaskController#0" expanded="false" />
+            <element signature="method#checkUserStaff#0;class#TaskController#0" expanded="false" />
           </folding>
         </state>
       </provider>
     </entry>
-    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/service/impl/TaskImpl.java">
+    <entry file="file://$PROJECT_DIR$/pom.xml">
       <provider selected="true" editor-type-id="text-editor">
-        <state relative-caret-position="817">
-          <caret line="50" column="0" lean-forward="true" selection-start-line="50" selection-start-column="0" selection-end-line="50" selection-end-column="0" />
+        <state relative-caret-position="433">
+          <caret line="163" column="4" lean-forward="false" selection-start-line="163" selection-start-column="4" selection-end-line="163" selection-end-column="4" />
+          <folding>
+            <element signature="n#build#0;n#project#0;n#!!top" expanded="false" />
+          </folding>
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/compress/CompressImpl.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" column="25" lean-forward="false" selection-start-line="2" selection-start-column="25" selection-end-line="2" selection-end-column="25" />
+          <folding />
+        </state>
+      </provider>
+    </entry>
+    <entry file="file://$PROJECT_DIR$/src/main/java/com/augurit/awater/compress/ICompress.java">
+      <provider selected="true" editor-type-id="text-editor">
+        <state relative-caret-position="38">
+          <caret line="2" column="22" lean-forward="false" selection-start-line="2" selection-start-column="22" selection-end-line="2" selection-end-column="22" />
           <folding />
         </state>
       </provider>

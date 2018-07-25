@@ -14,7 +14,10 @@ import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
+import org.springframework.web.multipart.MultipartRequest;
 
 import javax.servlet.http.HttpServletRequest;
 import java.util.ArrayList;
@@ -209,6 +212,39 @@ public class TaskController {
             itask.updateTaskInstance(instance);
         } catch (Exception e) {
             LOGGER.error("任务信息发布失败", e);
+            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
+        } finally {
+            InProcessContext.setResponseMsg(responseMsg);
+        }
+    }
+
+    @RequestMapping("/detail/import")
+    @ResponseBody
+    public void importTaskDetails(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
+        ResponseMsg responseMsg = null;
+        try {
+            JSONObject content = InProcessContext.getRequestMsg().getContent();
+
+            String originalFilename = file.getOriginalFilename();
+            // IE8下会拿到文件的路径名
+            if(originalFilename.indexOf("\\") != -1) {// windows环境
+                originalFilename = originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
+            }
+            if(originalFilename.indexOf("/") != -1) {
+                originalFilename = originalFilename.substring(originalFilename.lastIndexOf("/") + 1);
+            }
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+
+
+            JSONArray details = (JSONArray) JSONArray.toJSON(itask.findTaskDetailList(user, instanceId, excludeCols));
+            JSONObject ret = new JSONObject();
+            ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
+            ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
+            ret.put("list", details);
+            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, ret);
+        } catch (Exception e) {
+            LOGGER.error("任务详情列表查询失败", e);
             responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
         } finally {
             InProcessContext.setResponseMsg(responseMsg);
