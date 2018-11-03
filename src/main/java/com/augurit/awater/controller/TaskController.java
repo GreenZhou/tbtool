@@ -6,22 +6,32 @@ import com.augurit.awater.DefaultIdGenerator;
 import com.augurit.awater.InProcessContext;
 import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.ResponseMsg;
+import com.augurit.awater.compress.IUncompress;
+import com.augurit.awater.compress.UncompressImpl;
+import com.augurit.awater.entity.FileInfo;
 import com.augurit.awater.entity.TaskDetail;
-import com.augurit.awater.entity.TaskInstance;
 import com.augurit.awater.entity.User;
+import com.augurit.awater.entity.TaskInstance;
+import com.augurit.awater.poi.TaskDetailProcessor;
+import com.augurit.awater.service.IFile;
 import com.augurit.awater.service.ITask;
+import com.augurit.awater.service.IUser;
+import com.google.common.base.Strings;
+import com.google.common.collect.Lists;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.multipart.MultipartFile;
-import org.springframework.web.multipart.MultipartRequest;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
 
 @Controller
@@ -30,6 +40,8 @@ public class TaskController {
 
     private final static Logger LOGGER = Logger.getLogger(TaskController.class);
 
+    private final static IUncompress compress = new UncompressImpl();
+
     //  管理员用户类型
     private final static int ADMINISTRATOR = 0;
     //  普通员工用户类型
@@ -37,8 +49,17 @@ public class TaskController {
     //  普通买家用户类型
     private final static int CUSTOMER = 2;
 
+	private String filePath = "C:/awater/upload/";
+    private String uncompressDestPath = "C:/awater/compress/";
+
     @Autowired
     private ITask itask;
+
+	@Autowired
+	private IFile ifile;
+
+    @Autowired
+	private IUser iuser;
 
     @RequestMapping("/list")
     @ResponseBody
@@ -49,14 +70,14 @@ public class TaskController {
             String token = InProcessContext.getRequestMsg().getToken();
             // ToDo 校验请求报文中数据
             User user = (User) req.getSession().getAttribute(token);
-           if(STAFF == user.getUserType()) {
+            if(STAFF == user.getUserType()) {
                recieverId = user.getId();
-           } else if(ADMINISTRATOR == user.getUserType()) {
+            } else if(ADMINISTRATOR == user.getUserType()) {
                creatorId = user.getId();
-           } else {
+            } else {
                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                return;
-           }
+            }
 
             JSONArray intances = (JSONArray) JSONArray.toJSON(itask.findTaskInstanceList(recieverId, creatorId));
             JSONObject ret = new JSONObject();
@@ -92,6 +113,17 @@ public class TaskController {
             instance.setCreateTime(new Date());
             instance.setCreatorId(user.getId());
             instance.setCreatorName(user.getUserName());
+            if(!Strings.isNullOrEmpty(content.getString("recieverId"))) {
+                User reciever = iuser.getUser(content.getString("recieverId"));
+                if(reciever != null) {
+                    instance.setRecieverId(reciever.getId());
+                    instance.setRecieverName(reciever.getUserName());
+                } else {
+                    // 数据库中没找到对应用户
+                    responseMsg = RespCodeMsgDepository.REQUEST_DATA_ERROR.toResponseMsg();
+                    return;
+                }
+            }
             instance.setStatus(TaskInstance.NOT_PUBLISHED);// 未发布状态
             itask.saveTaskInstance(instance);
 
@@ -109,19 +141,21 @@ public class TaskController {
     public void delTaskInstance(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            if(checkUserAdmin(req)) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
-            String id = content.getString("id");
-            TaskInstance instance = itask.getTaskInstance(id);
-            if(instance != null && instance.getStatus() == TaskInstance.IS_ASSIGNED) {
-                responseMsg = RespCodeMsgDepository.DELETE_TASK_ERROR.toResponseMsg();
-                return;
+            String[] ids = content.getString("ids").split(",");
+            for(String id : ids) {
+                TaskInstance instance = itask.getTaskInstance(id);
+                if(instance != null && instance.getStatus() == TaskInstance.IS_ASSIGNED) {
+                    responseMsg = RespCodeMsgDepository.DELETE_TASK_ERROR.toResponseMsg();
+                    return;
+                }
+                itask.delTaskInstance(id);
             }
-            itask.delTaskInstance(id);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
             LOGGER.error("任务信息删除失败", e);
@@ -136,7 +170,7 @@ public class TaskController {
     public void abandonTaskInstance(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            if(checkUserAdmin(req)) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
@@ -173,14 +207,22 @@ public class TaskController {
     public void updTaskInstance(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            if(checkUserAdmin(req)) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             TaskInstance instance = new TaskInstance();
+            instance.setId(content.getString("id"));
             instance.setTaskName(content.getString("taskName"));
+            if(!Strings.isNullOrEmpty(content.getString("recieverId"))) {
+                User reciever = iuser.getUser(content.getString("recieverId"));
+                if(reciever != null) {
+                    instance.setRecieverId(reciever.getId());
+                    instance.setRecieverName(reciever.getUserName());
+                }
+            }
             itask.updateTaskInstance(instance);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
@@ -191,12 +233,18 @@ public class TaskController {
         }
     }
 
+    @RequestMapping("/importTaskDetails")
+    @ResponseBody
+    public void importTaskDetails() {
+
+    }
+
     @RequestMapping("/publish")
     @ResponseBody
     public void publishTaskInstance(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            if(checkUserAdmin(req)) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
@@ -218,13 +266,11 @@ public class TaskController {
         }
     }
 
-    @RequestMapping("/detail/import")
+    @RequestMapping("/detail/import/{instanceId}/{token}")
     @ResponseBody
-    public void importTaskDetails(@RequestParam("file") MultipartFile file, HttpServletRequest req) {
+    public void importTaskDetails(@RequestParam("file") MultipartFile file, @PathVariable("instanceId") String instanceId, @PathVariable("token") String token, HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            JSONObject content = InProcessContext.getRequestMsg().getContent();
-
             String originalFilename = file.getOriginalFilename();
             // IE8下会拿到文件的路径名
             if(originalFilename.indexOf("\\") != -1) {// windows环境
@@ -234,17 +280,45 @@ public class TaskController {
                 originalFilename = originalFilename.substring(originalFilename.lastIndexOf("/") + 1);
             }
             String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+			String id = DefaultIdGenerator.getIdForStr();
+			// 上传文件名
+			String newFilename = id + suffix;
+			File serverFile = new File(filePath + newFilename);
+			// 将上传的文件写入到服务器端文件内
+			file.transferTo(serverFile);
 
+			FileInfo fileInfo = new FileInfo();
+			fileInfo.setId(id);
+			fileInfo.setOriginalFilename(originalFilename);
+			fileInfo.setSuffix(suffix);
+			fileInfo.setDirPath(filePath + instanceId);
+			fileInfo.setFileSize(Math.floor(file.getSize()/1024d + 0.5) + "KB");
+			User user = (User) req.getSession().getAttribute(token);
+			fileInfo.setCreatorLoginName(user.getLoginName());
+			fileInfo.setCreatorUserName(user.getUserName());
+			ifile.saveFile(fileInfo);
 
+			// 解压
+			compress.uncompress(serverFile.getCanonicalPath(), uncompressDestPath + instanceId);
 
-            JSONArray details = (JSONArray) JSONArray.toJSON(itask.findTaskDetailList(user, instanceId, excludeCols));
-            JSONObject ret = new JSONObject();
-            ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
-            ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
-            ret.put("list", details);
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, ret);
+			// 取xls文件
+			// 解析xls文件并数据入库
+            List<TaskDetail> details = Lists.newArrayList();
+			Iterator<File> files = org.apache.commons.io.FileUtils.iterateFiles(new File(uncompressDestPath + instanceId), new String[] {"xls", "xlsx"}, true);
+			while(files.hasNext()) {
+				File xlsFile = files.next();
+				// 解析excel
+                details.addAll(new TaskDetailProcessor().process(xlsFile));
+			}
+
+			for(TaskDetail detail : details) {
+			    detail.setTaskId(instanceId);
+			    detail.setStatus(TaskDetail.NOT_CLAIMED);
+            }
+			itask.saveTaskDetailBatch(details);
+            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
-            LOGGER.error("任务详情列表查询失败", e);
+            LOGGER.error("任务详情导入失败", e);
             responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
         } finally {
             InProcessContext.setResponseMsg(responseMsg);
@@ -332,7 +406,7 @@ public class TaskController {
     public void delTaskDetail(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            if(checkUserAdmin(req)) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
@@ -345,7 +419,11 @@ public class TaskController {
                 responseMsg = RespCodeMsgDepository.DELETE_TASK_ERROR.toResponseMsg();
                 return;
             }
-            itask.delTaskDetail(content.getString("id"), instanceId);
+            List<String> ids = null;
+            if(!Strings.isNullOrEmpty(content.getString("ids"))) {
+                ids = Lists.newArrayList(content.getString("ids").split(","));
+            }
+            itask.delTaskDetail(ids, instanceId);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
             LOGGER.error("任务详细信息删除失败", e);

@@ -172,7 +172,7 @@ public class PagePlugin implements Interceptor {
 
         pageSql.append(sql);
         //  MYSQL序列是从1开始
-        pageSql.append(" limit " + page.getCurrentIndex() + "," + ((page.getCurrentIndex() > 0 ? page.getCurrentIndex() - 1 : page.getCurrentIndex()) + page.getShowSize()));
+        pageSql.append(" limit " + page.getCurrentIndex() + "," + page.getShowSize());
 
         return pageSql.toString();
     }

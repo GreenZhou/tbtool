@@ -24,29 +24,37 @@ public class UserImpl implements IUser {
 	private UserMapper userMapper;
 
 	@Override
-	public User getUser(String loginName) throws AppException {
+	public User getUser(String loginNameOrId) throws AppException {
 		User user = null;
 
 		try {
-			user = userMapper.getUser(loginName);
+			user = userMapper.getUser(loginNameOrId);
 		} catch (Exception e) {
-			throw new AppException(RespCodeMsgDepository.USER_LOGIN_ERROR, "用户【" + loginName + "】登录失败", e);
+			throw new AppException(RespCodeMsgDepository.USER_LOGIN_ERROR, "用户【" + loginNameOrId + "】登录失败", e);
 		}
 
 		return user;
 	}
 
 	@Override
-	public List<User> findUserList(int operateUserType) throws AppException {
+	public List<User> findUserList(int operateUserType, String name) throws AppException {
 		List<User> users = null;
 
 		try {
-			users = userMapper.findUserList(operateUserType);
+			users = userMapper.findUserList(operateUserType, name);
 		} catch (Exception e) {
 			throw new AppException(RespCodeMsgDepository.SERVER_INTERNAL_ERROR, "查询用户失败", e);
 		}
 
 		return users;
+	}
+	@Override
+	public void saveUserBatch(List<User> users) throws AppException {
+		try {
+			userMapper.saveUserBatch(users);
+		} catch (Exception e) {
+			throw new AppException(RespCodeMsgDepository.SERVER_INTERNAL_ERROR, "添加用户失败", e);
+		}
 	}
 
 	@Override
@@ -59,9 +67,9 @@ public class UserImpl implements IUser {
 	}
 
 	@Override
-	public void delUser(String id, int userType) throws AppException {
+	public void delUsers(List<String> ids, int userType) throws AppException {
 		try {
-			userMapper.delUser(id, userType);
+			userMapper.delUsers(ids, userType);
 		} catch (Exception e) {
 			throw new AppException(RespCodeMsgDepository.SERVER_INTERNAL_ERROR, "删除用户失败", e);
 		}

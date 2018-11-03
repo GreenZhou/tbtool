@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="com.augurit.awater.dao.FileMapper">
+    <sql id="allColumns" >
+        f.ID id,
+        f.SUFFIX suffix,
+        f.ORIGINAL_FILENAME originalFilename,
+        f.FILE_SIZE fileSize,
+        f.DIR_PATH dirPath,
+        f.IS_ACTIVE isActive,
+        f.CREATOR_LOGIN_NAME creatorLoginName,
+        f.CREATOR_USER_NAME creatorUserName,
+        IFNULL(date_format(f.CREATE_TIME, '%Y-%m-%d %H:%i:%s'), '') createTime,
+        f.ENCODING encoding
+    </sql>
+
+    <!-- 保存附件信息 -->
+    <insert id="saveFile" parameterType="FileInfo">
+        INSERT INTO TB_FILE(ID, SUFFIX, ORIGINAL_FILENAME, FILE_SIZE, DIR_PATH, IS_ACTIVE, CREATE_TIME, ENCODING, CREATOR_LOGIN_NAME, CREATOR_USER_NAME)
+        VALUES (#{id}, #{suffix}, #{originalFilename}, #{fileSize}, #{dirPath}, #{isActive}, #{createTime},
+        #{encoding}, #{creatorLoginName}, #{creatorUserName})
+    </insert>
+
+    <!-- 批量删除附件信息 -->
+    <delete id="removeFiles">
+        DELETE FROM TB_FILE
+        WHERE id IN
+        <foreach collection="ids" item="item" open="(" separator="," close=")">
+            #{item, jdbcType=VARCHAR}
+        </foreach>
+    </delete>
+
+    <!-- 更新附件状态 -->
+    <update id="updateFileStatus">
+        UPDATE TB_FILE f
+        SET f.IS_ACTIVE=#{isActive}
+        WHERE f.id = #{id}
+    </update>
+
+    <!-- 查询单个附件信息 -->
+    <select id="getFileInfo" resultType="FileInfo">
+        SELECT <include refid="allColumns"/>
+        FROM TB_FILE f
+        WHERE f.id = #{id}
+    </select>
+
+    <!-- 通过ID列表查询所有的附件信息，如果集合为空，则查询所有的附件信息 -->
+    <select id="findFileInfos" parameterType="java.util.List" resultType="FileInfo">
+        SELECT <include refid="allColumns"/>
+        FROM TB_FILE f
+        WHERE 1=1
+        <if test="!@org.springframework.util.CollectionUtils@isEmpty(ids)">
+            and f.id IN
+            <foreach collection="ids" item="item" open="(" separator="," close=")">
+                #{item, jdbcType=VARCHAR}
+            </foreach>
+        </if>
+    </select>
+
+    <!-- 通过文件目录组查找所有的附件信息，如果集合为空，则查询所有的附件信息 -->
+    <select id="listFileInfos" parameterType="java.util.List" resultType="FileInfo">
+        SELECT <include refid="allColumns"/>
+        FROM TB_FILE f
+        WHERE 1=1
+        <if test="@org.apache.commons.lang.StringUtils@isNotEmpty(fileName)">
+            and f.original_filename like CONCAT(CONCAT('%', #{fileName}), '%')
+        </if>
+        ORDER BY f.create_time desc
+    </select>
+
+    <!-- 保存服务审批文件 -->
+    <insert id="saveTaskFiles">
+        INSERT INTO TASK_FILE(INSTANCEID, FILEID)
+        VALUES
+        <foreach collection="ids" item="item" open="" separator="," close="">
+            (#{instanceId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR})
+        </foreach>
+    </insert>
+
+    <!-- 根据申请实例ID获取文件列表信息 -->
+    <select id="findFileInfosByInstanceId" resultType="FileInfo">
+        SELECT <include refid="allColumns"/>
+        FROM TASK_FILE tf left join TB_FILE f
+        ON tf.FILEID = f.ID
+        WHERE tf.INSTANCEID = #{instanceId}
+    </select>
+
+    <delete id="removeTaskFile">
+        DELETE FROM TASK_FILE
+        WHERE INSTANCEID = #{instanceId}
+            AND FILEID = #{id}
+    </delete>
+</mapper>

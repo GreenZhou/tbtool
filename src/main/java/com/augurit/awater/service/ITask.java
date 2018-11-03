@@ -1,11 +1,9 @@
 package com.augurit.awater.service;
 
-import com.augurit.awater.entity.Saler;
 import com.augurit.awater.entity.TaskDetail;
 import com.augurit.awater.entity.TaskInstance;
 import com.augurit.awater.entity.User;
 import com.augurit.awater.exception.AppException;
-import org.apache.ibatis.annotations.Param;
 
 import java.util.List;
 
@@ -30,9 +28,11 @@ public interface ITask {
     //  更新具体的任务明细
     void updTaskDetail(TaskDetail detail) throws AppException;
     // 删除具体的任务明细
-    void delTaskDetail(String id, String instanceId) throws AppException;
+    void delTaskDetail(List<String> ids, String instanceId) throws AppException;
     // 保存具体的任务明细
     void saveTaskDetail(TaskDetail detail) throws AppException;
+    // 批量保存具体的任务明细列表
+    void saveTaskDetailBatch(List<TaskDetail> details) throws AppException;
     // 发布任务明细
     void publishTaskDetail(User user, String instanceId) throws AppException;
     // 废弃任务明细

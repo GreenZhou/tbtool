@@ -6,16 +6,26 @@ import com.augurit.awater.DefaultIdGenerator;
 import com.augurit.awater.InProcessContext;
 import com.augurit.awater.RespCodeMsgDepository;
 import com.augurit.awater.ResponseMsg;
+import com.augurit.awater.entity.FileInfo;
 import com.augurit.awater.entity.User;
+import com.augurit.awater.exception.AppException;
+import com.augurit.awater.poi.UserProcessor;
+import com.augurit.awater.service.IFile;
 import com.augurit.awater.service.IUser;
+import com.google.common.collect.Lists;
 import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
+import java.io.File;
+import java.util.List;
 
 @Controller
 @RequestMapping("/user")
@@ -30,8 +40,14 @@ public class UserController {
     //  普通买家用户类型
     private final static int CUSTOMER = 2;
 
+    @Value(value = "${defaultUploadPath}")
+    private String defaultUploadPath;
+
     @Autowired
     private IUser iuser;
+
+    @Autowired
+    private IFile ifile;
 
     @RequestMapping("/login")
     @ResponseBody
@@ -92,7 +108,8 @@ public class UserController {
                 return;
             }
 
-            JSONArray users = (JSONArray) JSONArray.toJSON(iuser.findUserList(operateUserType));
+			String name = InProcessContext.getRequestMsg().getContent().getString("name");
+            JSONArray users = (JSONArray) JSONArray.toJSON(iuser.findUserList(operateUserType, name));
             JSONObject ret = new JSONObject();
             ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
             ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
@@ -136,9 +153,62 @@ public class UserController {
         }
     }
 
+    @RequestMapping("/importUsers")
+    @ResponseBody
+    public void importUsers(@RequestParam("file") MultipartFile file, @RequestParam("token") String token, HttpServletRequest req) {
+		ResponseMsg responseMsg = null;
+
+        try {
+			// 校验token
+			User user = (User) req.getSession().getAttribute(token);
+			if(user == null) {
+				LOGGER.error("token[" + token + "] 无效");
+				InProcessContext.setResponseMsg(RespCodeMsgDepository.TOKEN_INVALID.toResponseMsg());
+				return;
+			}
+
+            String originalFilename = file.getOriginalFilename();
+            // IE8下会拿到文件的路径名
+            if(originalFilename.indexOf("\\") != -1) {// windows环境
+                originalFilename = originalFilename.substring(originalFilename.lastIndexOf("\\") + 1);
+            }
+            if(originalFilename.indexOf("/") != -1) {
+                originalFilename = originalFilename.substring(originalFilename.lastIndexOf("/") + 1);
+            }
+            String suffix = originalFilename.substring(originalFilename.lastIndexOf("."));
+
+            String id = DefaultIdGenerator.getIdForStr();
+            // 上传文件名
+            String newFilename = id + suffix;
+            File serverFile = new File(this.defaultUploadPath + newFilename);
+            // 将上传的文件写入到服务器端文件内
+            file.transferTo(serverFile);
+
+            FileInfo fileInfo = new FileInfo();
+            fileInfo.setId(id);
+            fileInfo.setOriginalFilename(originalFilename);
+            fileInfo.setSuffix(suffix);
+            fileInfo.setFileSize(Math.floor(file.getSize()/1024d + 0.5) + "KB");
+            fileInfo.setIsActive("0");
+            fileInfo.setDirPath(this.defaultUploadPath + newFilename);
+            fileInfo.setCreatorLoginName(user.getLoginName());
+            fileInfo.setCreatorUserName(user.getUserName());
+            ifile.saveFile(fileInfo);
+
+            iuser.saveUserBatch(UserProcessor.importFileToUsers(serverFile, user));
+
+            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
+        } catch (Exception e) {
+            LOGGER.error("用户导入失败", e);
+            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
+        } finally {
+            InProcessContext.setResponseMsg(responseMsg);
+        }
+    }
+
     @RequestMapping("/del")
     @ResponseBody
-    public void delUser(HttpServletRequest req) {
+    public void delUsers(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
             // 判断当前登录用户是否具备添加用户权限
@@ -149,7 +219,8 @@ public class UserController {
             }
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
-            iuser.delUser(content.getString("id"), operateUserType);
+            List<String> ids = Lists.newArrayList(content.getString("ids").split(","));
+            iuser.delUsers(ids, operateUserType);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
             LOGGER.error("用户删除失败", e);

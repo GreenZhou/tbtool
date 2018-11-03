@@ -4,6 +4,8 @@
         "http://mybatis.org/dtd/mybatis-3-config.dtd">
 <configuration>
     <settings>
+        <!-- 打印sql到控制台 -->
+        <setting name="logImpl" value="STDOUT_LOGGING" />
         <!-- 对所有cache 进行全局性开/关设置, 默认为true -->
         <setting name="cacheEnabled" value="false" />
         <!-- 全局性设置懒加载。如果设为‘false’，则所有相关联的都会被初始化加载, 默认为true -->

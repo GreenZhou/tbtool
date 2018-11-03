@@ -14,7 +14,7 @@
     <select id="getUser" resultType="User">
         select <include refid="allColumns" />
         from tb_user
-        where login_name = #{loginName}
+        where login_name = #{loginNameOrId} or id = #{loginNameOrId}
     </select>
 
     <!-- 查询用户列表 -->
@@ -22,6 +22,9 @@
         select <include refid="allColumns" />
         from tb_user
         where user_type = #{userType}
+        <if test="name != null and name != ''">
+            and (login_name like concat('%', #{name}, '%') or user_name like concat('%', #{name}, '%'))
+        </if>
     </select>
 
     <!-- 保存单个用户 -->
@@ -30,9 +33,20 @@
         values(#{user.id}, #{user.loginName}, #{user.userName}, #{user.passwd}, #{user.userType})
     </insert>
 
+    <!-- 批量保存单个用户 -->
+    <insert id="saveUserBatch">
+        insert into tb_user(id, login_name, user_name, passwd, user_type)
+        values
+        <foreach collection ="users" item="user" index= "index" separator =",">
+        (#{user.id}, #{user.loginName}, #{user.userName}, #{user.passwd}, #{user.userType})
+        </foreach>
+    </insert>
+
     <!-- 删除单个用户 -->
-    <delete id="delUser">
-        delete from tb_user where id = #{id}
+    <delete id="delUsers">
+        delete from tb_user where id in (
+        <foreach collection="ids" item="id" index="index" separator=",">#{id}</foreach>
+        )
         <if test="userType != null and userType != -1">
           and user_type = #{userType}
         </if>

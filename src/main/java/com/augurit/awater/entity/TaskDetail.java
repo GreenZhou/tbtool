@@ -14,9 +14,11 @@ public class TaskDetail {
     private String customerName;
     private String salerId;
     private String salerName;
+    private String salerTMName;
     private int taskNum;
     private String taskDetailName;
     private String taskDesc;
+    private String taskUrl;
     private double taskUnitPrice;
     private double taskTotalPrice;
     private double totalCommission;
@@ -142,5 +144,21 @@ public class TaskDetail {
 
     public void setCustomerCommission(double customerCommission) {
         this.customerCommission = customerCommission;
+    }
+
+    public String getSalerTMName() {
+        return salerTMName;
+    }
+
+    public void setSalerTMName(String salerTMName) {
+        this.salerTMName = salerTMName;
+    }
+
+    public String getTaskUrl() {
+        return taskUrl;
+    }
+
+    public void setTaskUrl(String taskUrl) {
+        this.taskUrl = taskUrl;
     }
 }

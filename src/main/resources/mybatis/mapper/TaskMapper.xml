@@ -1,0 +1,162 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+
+<mapper namespace="com.augurit.awater.dao.TaskMapper">
+    <sql id="allColumns_task">
+        id,
+        task_name  taskName,
+        creator_id creatorId,
+        creator_name creatorName,
+        reciever_id recieverId,
+        reciever_name recieverName,
+        min_customer_num minCustomerNum,
+        real_customer_num realCustomerNum,
+        status,
+        create_time createTime
+    </sql>
+
+    <sql id="allColumns_task_detail">
+        id,
+        task_id  taskName,
+        customer_id customerId,
+        customer_name customerName,
+        saler_id salerId,
+        saler_name salerName,
+        saler_tm_name salerTMName,
+        task_num taskNum,
+        task_detail_name taskDetailName,
+        task_desc taskDesc,
+        task_unit_price taskUnitPrice,
+        task_total_price taskTotalPrice,
+        total_commission totalCommission,
+        customer_commission customerCommission,
+        status,
+        create_time createTime
+    </sql>
+
+    <select id="getTaskInstance" resultType="TaskInstance">
+        select <include refid="allColumns_task" /> from tb_task where id = #{id}
+    </select>
+
+    <insert id="saveTaskInstance" parameterType="TaskInstance">
+        insert into tb_task(id, task_name, creator_id, creator_name, reciever_id, reciever_name, min_customer_num, real_customer_num, status, create_time)
+        values(#{id}, #{taskName}, #{creatorId}, #{creatorName}, #{recieverId}, #{recieverName}, #{minCustomerNum}, #{realCustomerNum}, #{status}, #{createTime})
+    </insert>
+
+    <insert id="publishTaskInstance"></insert>
+
+    <select id="findTaskInstanceList" resultType="TaskInstance">
+        select <include refid="allColumns_task" /> from tb_task where 1 = 1
+        <if test="creatorId != '' and creatorId != null">
+            and creator_id = #{creatorId}
+        </if>
+        <if test="recieverId != '' and recieverId != null">
+            and reciever_id = #{recieverId}
+        </if>
+    </select>
+
+    <update id="updateTaskInstance" parameterType="TaskInstance">
+        update tb_task
+        <set>
+            <if test="taskName != null">
+                task_name = #{taskName},
+            </if>
+            <if test="recieverId != null">
+                reciever_id = #{recieverId},
+            </if>
+            <if test="recieverName != null">
+                reciever_name = #{recieverName},
+            </if>
+            <if test="minCustomerNum != null">
+                min_customer_num = #{minCustomerNum},
+            </if>
+            <if test="realCustomerNum != null">
+                real_customer_num = #{realCustomerNum},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <delete id="delTaskInstance">
+        delete from tb_task where id = #{id}
+    </delete>
+
+    <select id="findTaskDetailList" resultType="TaskDetail">
+        select <include refid="allColumns_task_detail" />
+        from tb_task_detail where task_id = #{instanceId}
+    </select>
+
+    <insert id="saveTaskDetail" parameterType="TaskDetail">
+        insert into tb_task_detail(id, task_id, customer_id, customer_name, saler_id, saler_name, saler_tm_name, task_num, task_detail_name,
+          task_desc, task_url, task_unit_price, task_total_price, total_commission, customer_commission, status, create_time)
+        values(#{id}, #{taskId}, #{customerId}, #{customerName}, #{salerId}, #{salerName}, #{salerTMName}, #{taskNum}, #{taskDetailName},
+          #{taskDesc}, #{taskUrl}, #{taskUnitPrice}, #{taskTotalPrice}, #{totalCommission}, #{customerCommission}, #{status}, #{createTime})
+    </insert>
+
+    <insert id="saveTaskDetailBatch">
+        insert into tb_task_detail(id, task_id, customer_id, customer_name, saler_id, saler_name, saler_tm_name, task_num, task_detail_name,
+        task_desc, task_url, task_unit_price, task_total_price, total_commission, customer_commission, status, create_time)
+        values
+        <foreach collection="details" item="detail" separator=",">
+            (#{detail.id}, #{detail.taskId}, #{detail.customerId}, #{detail.customerName}, #{detail.salerId},
+            #{detail.salerName}, #{detail.salerTMName}, #{detail.taskNum}, #{detail.taskDetailName},
+            #{detail.taskDesc}, #{detail.taskUrl}, #{detail.taskUnitPrice}, #{detail.taskTotalPrice}, #{detail.totalCommission},
+            #{detail.customerCommission}, #{detail.status}, #{detail.createTime})
+        </foreach>
+    </insert>
+
+    <update id="updTaskDetail" parameterType="TaskDetail">
+        update tb_task_detail
+        <set>
+            <if test="customerId != null and customerId != ''">
+                customer_id = #{customerId},
+                customer_name = #{customerName},
+            </if>
+            <if test="salerId != null and salerId != ''">
+                customer_id = #{customerId},
+                saler_name = #{salerName},
+            </if>
+            <if test="taskNum != null">
+                task_num = #{taskNum},
+            </if>
+            <if test="taskDetailName != null">
+                task_detail_name = #{taskDetailName},
+            </if>
+            <if test="taskDesc != null">
+                task_desc = #{taskDesc},
+            </if>
+            <if test="taskUnitPrice != null">
+                task_unit_price = #{taskUnitPrice},
+            </if>
+            <if test="taskTotalPrice != null">
+                task_total_price = #{taskTotalPrice},
+            </if>
+            <if test="totalCommission != null">
+                total_commission = #{totalCommission},
+            </if>
+            <if test="customerCommission != null">
+                customer_commission = #{customerCommission},
+            </if>
+            <if test="status != null">
+                status = #{status},
+            </if>
+        </set>
+        where id=#{id}
+    </update>
+
+    <delete id="delTaskDetail">
+        delete from tb_task_detail where 1=1
+        <if test="ids != null">
+            and id in
+            <foreach collection="ids" item="id" separator="," open="(" close=")">
+                #{id}
+            </foreach>
+        </if>
+        <if test="instanceId != null and instanceId != ''">
+            and task_id = #{instanceId}
+        </if>
+    </delete>
+</mapper>

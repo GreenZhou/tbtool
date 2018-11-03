@@ -31,7 +31,23 @@ public class ReqInterceptor implements HandlerInterceptor {
 
     @Override
     public boolean preHandle(HttpServletRequest req, HttpServletResponse resp, Object o) throws Exception {
-        String reqData = getRequestData(req);
+		// 设置CORS跨域问题处理
+		resp.setHeader("Access-Control-Allow-Origin", req.getHeader("Origin"));
+		resp.setHeader("Access-Control-Allow-Credentials", "true");
+		resp.setHeader("P3P", "CP=CAO PSA OUR");
+		if (req.getHeader("Access-Control-Request-Method") != null
+				&& "OPTIONS".equals(req.getMethod())) {
+			resp.addHeader("Access-Control-Allow-Methods", "POST,GET,TRACE,OPTIONS");
+			resp.addHeader("Access-Control-Allow-Headers", "Content-Type,Origin,Accept");
+			resp.addHeader("Access-Control-Max-Age", "120");
+		}
+
+        // 上传文件请求，直接跳过
+    	if(req.getMethod().equals("OPTIONS") || (!Strings.isNullOrEmpty(req.getContentType()) && req.getContentType().contains("multipart"))) {
+			return true;
+		}
+
+    	String reqData = getRequestData(req);
 
 	    LOGGER.info("接收客户端[" + req.getRemoteAddr() + "]的请求， 其请求报文：\n" + reqData);
 
@@ -40,7 +56,7 @@ public class ReqInterceptor implements HandlerInterceptor {
             requestMsg = new RequestMsg(reqData);
 
 	        // 如果是非登录接口，对其进行token校验
-			if(!"/user/login".equals(req.getServletPath())) {
+			if(!"/user/login".equals(req.getServletPath()) && !"/menu/list".equals(req.getServletPath())) {
 				User user = (User) req.getSession().getAttribute(requestMsg.getToken());
 				if(user == null) {
 					throw new AppException(RespCodeMsgDepository.TOKEN_INVALID, "token无效");
@@ -61,7 +77,7 @@ public class ReqInterceptor implements HandlerInterceptor {
 		        LOGGER.info("响应客户端[" + req.getRemoteAddr() + "]的请求， 其响应报文：\n"
 				        + ((AppException) e).getDepository().toResponseMsg().toString());
 
-		        respDataToClient(((AppException) e).getDepository().toResponseMsg(), resp);
+		        respDataToClient(((AppException) e).getDepository().toResponseMsg(), req, resp);
 
 	        } else {
 		        LOGGER.error("构造请求数据对象失败...", e);
@@ -70,7 +86,7 @@ public class ReqInterceptor implements HandlerInterceptor {
 		        LOGGER.info("响应客户端[" + req.getRemoteAddr() + "]的请求， 其响应报文：\n"
 				        + RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg().toString());
 
-		        respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), resp);
+		        respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), req, resp);
 	        }
 
 	        return false;
@@ -90,7 +106,7 @@ public class ReqInterceptor implements HandlerInterceptor {
 			    LOGGER.info("响应客户端[" + req.getRemoteAddr() + "]的请求， 其响应报文：\n"
 					    + RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg().toString());
 
-			    respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), resp);
+			    respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), req, resp);
 
 			    return;
 		    }
@@ -99,7 +115,7 @@ public class ReqInterceptor implements HandlerInterceptor {
 		    LOGGER.info("响应客户端[" + req.getRemoteAddr() + "]的请求， 其响应报文：\n"
 				    + Strings.nullToEmpty(InProcessContext.getResponseMsg().toString()));
 
-		    respDataToClient(responseMsg, resp);
+		    respDataToClient(responseMsg, req, resp);
 
 	    } catch (Exception e) {
 		    LOGGER.error("返回响应数据对象失败...", e);
@@ -108,7 +124,7 @@ public class ReqInterceptor implements HandlerInterceptor {
 		    LOGGER.info("响应客户端[" + req.getRemoteAddr() + "]的请求， 其响应报文：\n"
 				    + RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg().toString());
 
-		    respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), resp);
+		    respDataToClient(RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg(), req, resp);
 	    }
     }
 
@@ -150,9 +166,10 @@ public class ReqInterceptor implements HandlerInterceptor {
 	 * @param responseMsg 对象确保非空
 	 * @param resp HTTP响应对象
 	 */
-	private void respDataToClient(ResponseMsg responseMsg, HttpServletResponse resp) {
+	private void respDataToClient(ResponseMsg responseMsg, HttpServletRequest req, HttpServletResponse resp) {
 		try {
 			resp.setCharacterEncoding("utf-8");
+
 			IOUtils.write(responseMsg.toString(), resp.getOutputStream(), Charsets.UTF_8);
 			resp.setStatus(HttpStatus.SC_OK);
 			resp.getOutputStream().flush();

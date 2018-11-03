@@ -42,7 +42,7 @@ public class User {
         this.passwd = passwd;
     }
 
-    @JSONField(serialize = false)
+    //@JSONField(serialize = false)
     public int getUserType() {
         return userType;
     }

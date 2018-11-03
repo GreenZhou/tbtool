@@ -4,10 +4,10 @@ import java.util.Date;
 import java.util.List;
 
 public class TaskInstance {
-    public static final int NOT_PUBLISHED = 0;
-    public static final int IS_ASSIGNED = 1;
-    public static final int IS_COMPLISHED = 2;
-    public static final int IS_ABANDONED = 3;
+    public static final int NOT_PUBLISHED = 0;// 未发布
+    public static final int IS_ASSIGNED = 1;// 已发布
+    public static final int IS_COMPLISHED = 2;// 已完成
+    public static final int IS_ABANDONED = 3;// 已废弃
 
     private String id;
     private String taskName;

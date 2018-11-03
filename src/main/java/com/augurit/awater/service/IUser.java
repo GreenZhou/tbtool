@@ -12,9 +12,10 @@ import java.util.List;
  * 修改说明：
  */
 public interface IUser {
-	User getUser(String loginName) throws AppException;
-	List<User> findUserList(int operateUserType) throws AppException;
+	User getUser(String loginNameOrId) throws AppException;
+	List<User> findUserList(int operateUserType, String name) throws AppException;
 	void saveUser(User user) throws AppException;
-	void delUser(String id, int userType) throws AppException;
+	void saveUserBatch(List<User> users) throws AppException;
+	void delUsers(List<String> ids, int userType) throws AppException;
 	void updUser(User user) throws AppException;
 }
