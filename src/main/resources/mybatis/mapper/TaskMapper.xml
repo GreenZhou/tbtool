@@ -7,17 +7,22 @@
         task_name  taskName,
         creator_id creatorId,
         creator_name creatorName,
-        reciever_id recieverId,
-        reciever_name recieverName,
+        reciever_ids recieverIds,
         min_customer_num minCustomerNum,
         real_customer_num realCustomerNum,
-        status,
+        claim_type claimType,
+        publish_status publishStatus,
+        published_status publishedStatus,
+        claim_status claimStatus,
+        complish_status complishStatus,
         create_time createTime
     </sql>
 
     <sql id="allColumns_task_detail">
         id,
-        task_id  taskName,
+        task_id  taskId,
+        reciever_id recieverId,
+        reciever_name recieverName,
         customer_id customerId,
         customer_name customerName,
         saler_id salerId,
@@ -31,6 +36,7 @@
         total_commission totalCommission,
         customer_commission customerCommission,
         status,
+        old_status oldStatus,
         create_time createTime
     </sql>
 
@@ -39,8 +45,8 @@
     </select>
 
     <insert id="saveTaskInstance" parameterType="TaskInstance">
-        insert into tb_task(id, task_name, creator_id, creator_name, reciever_id, reciever_name, min_customer_num, real_customer_num, status, create_time)
-        values(#{id}, #{taskName}, #{creatorId}, #{creatorName}, #{recieverId}, #{recieverName}, #{minCustomerNum}, #{realCustomerNum}, #{status}, #{createTime})
+        insert into tb_task(id, task_name, creator_id, creator_name, reciever_ids, min_customer_num, real_customer_num, claim_type, publish_status, published_status, claim_status, complish_status, create_time)
+        values(#{id}, #{taskName}, #{creatorId}, #{creatorName}, #{recieverIds}, #{minCustomerNum}, #{realCustomerNum}, #{claimType}, #{publishStatus}, #{publishedStatus}, #{claimStatus}, #{complishStatus}, #{createTime})
     </insert>
 
     <insert id="publishTaskInstance"></insert>
@@ -51,7 +57,10 @@
             and creator_id = #{creatorId}
         </if>
         <if test="recieverId != '' and recieverId != null">
-            and reciever_id = #{recieverId}
+            and reciever_ids like concat('%', #{recieverId}, '%')
+        </if>
+        <if test="taskName != '' and taskName != null">
+            and task_name like concat('%', #{taskName}, '%')
         </if>
     </select>
 
@@ -61,11 +70,8 @@
             <if test="taskName != null">
                 task_name = #{taskName},
             </if>
-            <if test="recieverId != null">
-                reciever_id = #{recieverId},
-            </if>
-            <if test="recieverName != null">
-                reciever_name = #{recieverName},
+            <if test="recieverIds != null">
+                reciever_ids = #{recieverIds},
             </if>
             <if test="minCustomerNum != null">
                 min_customer_num = #{minCustomerNum},
@@ -73,9 +79,30 @@
             <if test="realCustomerNum != null">
                 real_customer_num = #{realCustomerNum},
             </if>
-            <if test="status != null">
-                status = #{status},
+            <if test="publishStatus != null">
+                publish_status = #{publishStatus},
             </if>
+            <if test="publishedStatus != null">
+                published_status = #{publishedStatus},
+            </if>
+            <if test="claimType != null">
+                claim_type = #{claimType},
+            </if>
+            <if test="complishStatus != null">
+                complish_status = #{complishStatus},
+            </if>
+            <if test="claimStatus != null">
+                claim_status = #{claimStatus},
+            </if>
+        </set>
+        where id = #{id}
+    </update>
+
+    <update id="abandonTaskInstance" parameterType="TaskInstance">
+        update tb_task
+        <set>
+            publish_status = #{instance.publishStatus},
+            published_Status = #{instance.publishedStatus},
         </set>
         where id = #{id}
     </update>
@@ -87,12 +114,15 @@
     <select id="findTaskDetailList" resultType="TaskDetail">
         select <include refid="allColumns_task_detail" />
         from tb_task_detail where task_id = #{instanceId}
+        <if test="taskDetailName != '' and taskDetailName != null">
+            and task_detail_name like concat('%', #{taskDetailName}, '%')
+        </if>
     </select>
 
     <insert id="saveTaskDetail" parameterType="TaskDetail">
-        insert into tb_task_detail(id, task_id, customer_id, customer_name, saler_id, saler_name, saler_tm_name, task_num, task_detail_name,
+        insert into tb_task_detail(id, task_id, reciever_id, reciever_name, customer_id, customer_name, saler_id, saler_name, saler_tm_name, task_num, task_detail_name,
           task_desc, task_url, task_unit_price, task_total_price, total_commission, customer_commission, status, create_time)
-        values(#{id}, #{taskId}, #{customerId}, #{customerName}, #{salerId}, #{salerName}, #{salerTMName}, #{taskNum}, #{taskDetailName},
+        values(#{id}, #{taskId}, #{recieverId}, #{recieverName}, #{customerId}, #{customerName}, #{salerId}, #{salerName}, #{salerTMName}, #{taskNum}, #{taskDetailName},
           #{taskDesc}, #{taskUrl}, #{taskUnitPrice}, #{taskTotalPrice}, #{totalCommission}, #{customerCommission}, #{status}, #{createTime})
     </insert>
 
@@ -114,6 +144,10 @@
             <if test="customerId != null and customerId != ''">
                 customer_id = #{customerId},
                 customer_name = #{customerName},
+            </if>
+            <if test="recieverId != null and recieverId != ''">
+                reciever_id = #{recieverId},
+                reciever_name = #{recieverName},
             </if>
             <if test="salerId != null and salerId != ''">
                 customer_id = #{customerId},
@@ -158,5 +192,21 @@
         <if test="instanceId != null and instanceId != ''">
             and task_id = #{instanceId}
         </if>
+    </delete>
+
+    <update id="abandonTaskDetail">
+        update tb_task_detail
+        set status = #{detail.status},
+          old_status = #{detail.oldStatus}
+        where id = #{detail.id}
+    </update>
+    
+    <delete id="delTaskDetailFiles">
+        delete from tb_task_detail
+        where detail_id = #{detailId}
+        and file_id in
+        <foreach collection="fileIds" item="fileId" separator="," open="(" close=")">
+            #{fileId}
+        </foreach>
     </delete>
 </mapper>

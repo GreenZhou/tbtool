@@ -38,8 +38,8 @@ public class FileImpl implements IFile {
 	}
 
 	@Override
-	public List<FileInfo> listFileInfos(List<String> dirIds, String fileName) throws Exception {
-		return fileMapper.listFileInfos(dirIds, fileName);
+	public List<FileInfo> findFileInfoList(List<String> dirIds, String fileName) throws Exception {
+		return fileMapper.findFileInfoList(dirIds, fileName);
 	}
 
 	@Override
@@ -53,7 +53,7 @@ public class FileImpl implements IFile {
 	}
 
 	@Override
-	public List<FileInfo> findFileInfosByInstanceId(String instanceId) throws Exception {
-		return fileMapper.findFileInfosByInstanceId(instanceId);
+	public List<FileInfo> findFileInfosByTaskDetailId(String detailId) throws Exception {
+		return fileMapper.findFileInfosByTaskDetailId(detailId);
 	}
 }

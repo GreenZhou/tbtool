@@ -52,7 +52,7 @@ public interface IFile {
 	 * @return
 	 * @throws Exception
 	 */
-	List<FileInfo> listFileInfos(List<String> dirIds, String fileName) throws Exception;
+	List<FileInfo> findFileInfoList(List<String> dirIds, String fileName) throws Exception;
 
 	/**
 	 * 通过id查找单个文件信息对象
@@ -63,10 +63,10 @@ public interface IFile {
 	FileInfo getFileInfo(String id) throws Exception;
 
 	/**
-	 * 根据申请实例ID获取文件列表信息
-	 * @param instanceId 实例ID
+	 * 根据任务明细ID获取文件列表信息
+	 * @param detailId 任务明细
 	 * @return
 	 * @throws Exception
 	 */
-	List<FileInfo> findFileInfosByInstanceId(String instanceId) throws Exception;
+	List<FileInfo> findFileInfosByTaskDetailId(String detailId) throws Exception;
 }

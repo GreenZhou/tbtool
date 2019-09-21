@@ -42,8 +42,8 @@ public class ReqInterceptor implements HandlerInterceptor {
 			resp.addHeader("Access-Control-Max-Age", "120");
 		}
 
-        // 上传文件请求，直接跳过
-    	if(req.getMethod().equals("OPTIONS") || (!Strings.isNullOrEmpty(req.getContentType()) && req.getContentType().contains("multipart"))) {
+        // 上传文件请求和GET请求，直接跳过
+    	if(req.getMethod().equals("OPTIONS") || req.getMethod().equals("GET") || (!Strings.isNullOrEmpty(req.getContentType()) && req.getContentType().contains("multipart"))) {
 			return true;
 		}
 

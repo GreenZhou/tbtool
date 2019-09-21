@@ -18,6 +18,9 @@ import com.augurit.awater.service.ITask;
 import com.augurit.awater.service.IUser;
 import com.google.common.base.Strings;
 import com.google.common.collect.Lists;
+import com.google.common.collect.Maps;
+import org.apache.commons.io.FileUtils;
+import org.apache.commons.lang.StringUtils;
 import org.apache.log4j.Logger;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
@@ -29,10 +32,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.servlet.http.HttpServletRequest;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.Iterator;
-import java.util.List;
+import java.util.*;
 
 @Controller
 @RequestMapping("/task")
@@ -79,7 +79,8 @@ public class TaskController {
                return;
             }
 
-            JSONArray intances = (JSONArray) JSONArray.toJSON(itask.findTaskInstanceList(recieverId, creatorId));
+            JSONArray intances = (JSONArray) JSONArray.toJSON(itask.findTaskInstanceList(recieverId, creatorId,
+                    InProcessContext.getRequestMsg().getContent().getString("taskName")));
             JSONObject ret = new JSONObject();
             ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
             ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
@@ -110,21 +111,28 @@ public class TaskController {
             TaskInstance instance = new TaskInstance();
             instance.setId(DefaultIdGenerator.getIdForStr());
             instance.setTaskName(content.getString("taskName"));
+            instance.setRecieverIds(content.getString("recieverIds"));
             instance.setCreateTime(new Date());
             instance.setCreatorId(user.getId());
             instance.setCreatorName(user.getUserName());
-            if(!Strings.isNullOrEmpty(content.getString("recieverId"))) {
-                User reciever = iuser.getUser(content.getString("recieverId"));
+            instance.setMinCustomerNum(0);
+            instance.setRealCustomerNum(0);
+            instance.setClaimType(content.getIntValue("claimType"));
+            instance.setClaimStatus(TaskInstance.NOT_CLAIMED);
+            instance.setPublishStatus(TaskInstance.NOT_PUBLISHED);
+            instance.setComplishStatus(TaskInstance.NOT_COMPLISHED);
+
+            /*
+            List<User> recievers = Lists.newArrayList();
+            String recieverIds = content.getString("recieverIds");
+            for(String recieverId : recieverIds.split(",")) {
+                User reciever = iuser.getUser(recieverId);
                 if(reciever != null) {
-                    instance.setRecieverId(reciever.getId());
-                    instance.setRecieverName(reciever.getUserName());
-                } else {
-                    // 数据库中没找到对应用户
-                    responseMsg = RespCodeMsgDepository.REQUEST_DATA_ERROR.toResponseMsg();
-                    return;
+                    recievers.add(reciever);
                 }
             }
-            instance.setStatus(TaskInstance.NOT_PUBLISHED);// 未发布状态
+            instance.setRecievers(recievers);
+            */
             itask.saveTaskInstance(instance);
 
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
@@ -149,11 +157,6 @@ public class TaskController {
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             String[] ids = content.getString("ids").split(",");
             for(String id : ids) {
-                TaskInstance instance = itask.getTaskInstance(id);
-                if(instance != null && instance.getStatus() == TaskInstance.IS_ASSIGNED) {
-                    responseMsg = RespCodeMsgDepository.DELETE_TASK_ERROR.toResponseMsg();
-                    return;
-                }
                 itask.delTaskInstance(id);
             }
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
@@ -177,22 +180,19 @@ public class TaskController {
 
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             TaskInstance instance = itask.getTaskInstance(content.getString("id"));
-            if(instance != null && instance.getStatus() == TaskInstance.IS_ASSIGNED) {
-                boolean canAbandonFlag = true;
+            if(instance != null) {
+                // 任务明细状态更新
                 for(TaskDetail detail : instance.getDetails()) {
-                    if(detail.getStatus() != TaskDetail.IS_ABANDONED && detail.getStatus() != TaskDetail.NOT_CLAIMED) {
-                        // 具体任务处在已认领和已完成状态
-                        canAbandonFlag = false;
-                        break;
-                    }
+                    detail.setOldStatus(detail.getStatus());
+                    detail.setStatus(TaskDetail.IS_ABANDONED);
                 }
 
-                if(!canAbandonFlag) {
-                    responseMsg = RespCodeMsgDepository.ABANDON_TASK_ERROR.toResponseMsg();
-                    return;
-                }
+                // 任务状态更新
+                instance.setPublishedStatus(instance.getPublishStatus());
+                instance.setPublishStatus(TaskInstance.IS_ABANDONED);
+                itask.abandonTaskInstance(instance);
             }
-            itask.abandonTaskInstance(content.getString("id"));
+
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
             LOGGER.error("任务信息废弃失败", e);
@@ -216,13 +216,8 @@ public class TaskController {
             TaskInstance instance = new TaskInstance();
             instance.setId(content.getString("id"));
             instance.setTaskName(content.getString("taskName"));
-            if(!Strings.isNullOrEmpty(content.getString("recieverId"))) {
-                User reciever = iuser.getUser(content.getString("recieverId"));
-                if(reciever != null) {
-                    instance.setRecieverId(reciever.getId());
-                    instance.setRecieverName(reciever.getUserName());
-                }
-            }
+            instance.setRecieverIds(content.getString("recieverIds"));
+            instance.setClaimType(content.getIntValue("claimType"));
             itask.updateTaskInstance(instance);
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
@@ -233,12 +228,11 @@ public class TaskController {
         }
     }
 
-    @RequestMapping("/importTaskDetails")
-    @ResponseBody
-    public void importTaskDetails() {
-
-    }
-
+    /*
+      发布任务          抢占方式                指派方式
+      任务明细指定了人   分配给指定人，其他抢占    分配给指定人
+      任务明细未指定人   抢占方式                发布时候提示平均随机分配
+     */
     @RequestMapping("/publish")
     @ResponseBody
     public void publishTaskInstance(HttpServletRequest req) {
@@ -252,14 +246,93 @@ public class TaskController {
             // 任务发布
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             TaskInstance instance = new TaskInstance();
-            instance.setStatus(TaskInstance.IS_ASSIGNED);
-            instance.setRecieverId(content.getString("recieverId"));
-            instance.setRecieverName(content.getString("recieverName"));
-            instance.setMinCustomerNum(1);
-            instance.setRealCustomerNum(1);
+            instance.setId(content.getString("id"));
+            instance.setPublishStatus(TaskInstance.IS_ASSIGNED);
+
+            List<TaskDetail> details = itask.findTaskDetailList(null, content.getString("id"), null, null);
+            Map<String, Integer> salerCustomerNum = Maps.newHashMap();
+            for(TaskDetail detail : details) {
+                if(salerCustomerNum.containsKey(detail.getSalerTMName())) {
+                    salerCustomerNum.put(detail.getSalerTMName(), salerCustomerNum.get(detail.getSalerTMName()) + 1 );
+                } else {
+                    salerCustomerNum.put(detail.getSalerTMName(), 1);
+                }
+            }
+
+            // 指派方式，给未指定的人进行随机分配
+            TaskInstance source = itask.getTaskInstance(instance.getId());
+            if(TaskInstance.ASSIGN_CLAIM_TYPE == source.getClaimType()) {
+                // TODO 优先同一个商铺对应同一个人
+                List<String> recieverIds = Lists.newArrayList(source.getRecieverIds());
+                List<String> recieverIdPool = Lists.newArrayListWithCapacity(details.size());
+                for(int i=0; i<details.size(); i++) {
+                    recieverIdPool.add(i, recieverIds.get(i % recieverIds.size()));
+                }
+
+                List<TaskDetail> assignedDetails = Lists.newArrayListWithCapacity(details.size());
+                for(TaskDetail detail : details) {
+                    if(!Strings.isNullOrEmpty(detail.getRecieverId())) {
+                        recieverIdPool.remove(detail.getRecieverId());
+                    } else {
+                        TaskDetail assignedDetail = new TaskDetail();
+                        assignedDetail.setId(detail.getId());
+                        assignedDetails.add(assignedDetail);
+                    }
+                }
+
+                // 随机指派
+                Random rand = new Random();
+                for(TaskDetail detail : assignedDetails) {
+                    int randIndex = rand.nextInt(recieverIdPool.size());
+                    String randRecieverId = recieverIdPool.get(randIndex);
+                    recieverIdPool.remove(randIndex);
+                    User randReciever = iuser.getUser(randRecieverId);
+                    if(randReciever == null) {
+                        LOGGER.error("通过用户ID [" + randRecieverId + "] 没有获取到用户信息");
+                        responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
+                        return;
+                    }
+                    detail.setRecieverId(randRecieverId);
+                    detail.setRecieverName(randReciever.getUserName());
+                    // 更新任务明细
+                    itask.updTaskDetail(detail);
+                }
+            }
+
+            int customerNum = -1;
+            for(Map.Entry<String, Integer> entry : salerCustomerNum.entrySet()) {
+                if(entry.getValue() > customerNum) {
+                    customerNum = entry.getValue();
+                }
+            }
+            instance.setMinCustomerNum(customerNum);
+            instance.setRealCustomerNum(customerNum);
             itask.updateTaskInstance(instance);
         } catch (Exception e) {
             LOGGER.error("任务信息发布失败", e);
+            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
+        } finally {
+            InProcessContext.setResponseMsg(responseMsg);
+        }
+    }
+
+    @RequestMapping("/getTaskRecievers")
+    @ResponseBody
+    public void getTaskRecievers(HttpServletRequest req) {
+        ResponseMsg responseMsg = null;
+        try {
+            if(!checkUserAdmin(req)) {
+                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
+                return;
+            }
+
+            List<User> recievers = itask.getTaskRecievers(InProcessContext.getRequestMsg().getContent().getString("instanceId"));
+            JSONObject ret = new JSONObject();
+            ret.put("list", recievers);
+            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, ret);
+
+        } catch (Exception e) {
+            LOGGER.error("获取任务接收人范围失败", e);
             responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
         } finally {
             InProcessContext.setResponseMsg(responseMsg);
@@ -308,7 +381,37 @@ public class TaskController {
 			while(files.hasNext()) {
 				File xlsFile = files.next();
 				// 解析excel
-                details.addAll(new TaskDetailProcessor().process(xlsFile));
+                List<TaskDetail> xlsDetails = new TaskDetailProcessor().process(xlsFile);
+
+                for(TaskDetail detail : xlsDetails) {
+                    File detailImg = new File(xlsFile.getParentFile().getCanonicalPath() + "\\" + detail.getTaskUrl());
+                    String originalImgName = detailImg.getName();
+                    // IE8下会拿到文件的路径名
+                    if(originalImgName.indexOf("\\") != -1) {// windows环境
+                        originalImgName = originalImgName.substring(originalImgName.lastIndexOf("\\") + 1);
+                    }
+                    if(originalImgName.indexOf("/") != -1) {
+                        originalImgName = originalImgName.substring(originalImgName.lastIndexOf("/") + 1);
+                    }
+                    String imgSuffix = originalImgName.substring(originalImgName.lastIndexOf("."));
+                    String imgId = DefaultIdGenerator.getIdForStr();
+                    FileUtils.copyFile(detailImg, new File(this.filePath + imgId + imgSuffix));
+
+                    List<FileInfo> detailFiles = Lists.newArrayList();
+                    FileInfo detailImgInfo = new FileInfo();
+                    detailImgInfo.setId(imgId);
+                    detailImgInfo.setOriginalFilename(originalImgName);
+                    detailImgInfo.setSuffix(imgSuffix);
+                    detailImgInfo.setFileSize(Math.floor(detailImg.getTotalSpace()/1024d + 0.5) + "KB");
+                    if(user != null) {
+                        detailImgInfo.setCreatorLoginName(user.getLoginName());
+                        detailImgInfo.setCreatorUserName(user.getUserName());
+                    }
+                    ifile.saveFile(detailImgInfo);
+                    detailFiles.add(detailImgInfo);
+                    detail.setDetailFiles(detailFiles);
+                }
+                details.addAll(xlsDetails);
 			}
 
 			for(TaskDetail detail : details) {
@@ -343,7 +446,7 @@ public class TaskController {
                 excludeCols.add("totalCommission");
             }
 
-            JSONArray details = (JSONArray) JSONArray.toJSON(itask.findTaskDetailList(user, instanceId, excludeCols));
+            JSONArray details = (JSONArray) JSONArray.toJSON(itask.findTaskDetailList(user, instanceId, content.getString("taskDetailName"), excludeCols));
             JSONObject ret = new JSONObject();
             ret.put("totalCount", InProcessContext.getPageParameter().getTotalCount());
             ret.put("pageSize", InProcessContext.getPageParameter().getPageSize());
@@ -366,20 +469,41 @@ public class TaskController {
             String token = InProcessContext.getRequestMsg().getToken();
             User user = (User) req.getSession().getAttribute(token);
             JSONObject content = InProcessContext.getRequestMsg().getContent();
+            detail.setId(content.getString("id"));
             if(user.getUserType() == ADMINISTRATOR) {
                 TaskInstance instance = itask.getTaskInstance(content.getString("instanceId"));
                 // 管理员主要更新任务明细 salerId、salerName、taskNum、taskDetailName、taskDesc、taskUnitPrice
                 // taskTotalPrice、totalCommission
                 detail.setSalerId(content.getString("salerId"));
                 detail.setSalerName(content.getString("salerName"));
+                detail.setSalerTMName(content.getString("salerTMName"));
+                // 更新任务接收人
+                if(!Strings.isNullOrEmpty(content.getString("recieverId"))) {
+                    User reciever = iuser.getUser(content.getString("recieverId"));
+                    if(reciever != null) {
+                        detail.setRecieverId(reciever.getId());
+                        detail.setRecieverName(reciever.getUserName());
+                    }
+                }
                 detail.setTaskNum(content.getIntValue("taskNum"));
                 detail.setTaskDetailName(content.getString("taskDetailName"));
                 detail.setTaskDesc(content.getString("taskDesc"));
                 detail.setTaskUnitPrice(content.getDoubleValue("taskUnitPrice"));
-                detail.setTaskTotalPrice(content.getDoubleValue("taskTotalPrice"));
+                if(content.getString("taskTotalPrice") == null || "0".equals(content.getString("taskTotalPrice"))) {
+                    detail.setTaskTotalPrice(content.getDoubleValue("taskUnitPrice") * content.getIntValue("taskNum"));
+                }
+                // detail.setTaskTotalPrice(content.getDoubleValue("taskTotalPrice"));
                 detail.setTotalCommission(content.getDoubleValue("totalCommission"));
+                List<FileInfo> detailFiles = Lists.newArrayList();
+                JSONArray detailFileArr = content.getJSONArray("detailFiles");
+                if(detailFileArr != null) {
+                    for(int i = 0; i < detailFileArr.size(); i++) {
+                        detailFiles.add(JSONObject.parseObject(detailFileArr.get(i).toString(), FileInfo.class));
+                    }
+                }
+                detail.setDetailFiles(detailFiles);
 
-                itask.updTaskDetail(detail);
+                // itask.updTaskDetail(detail);
             } else if(user.getUserType() == STAFF) {
                 // 普通员工主要更新任务明细 customerId、customerName、customerCommission、status
                 detail.setCustomerId(content.getString("customerId"));
@@ -414,11 +538,7 @@ public class TaskController {
             // 删除具体详细任务
             JSONObject content = InProcessContext.getRequestMsg().getContent();
             String instanceId = content.getString("instanceId");
-            TaskInstance instance = itask.getTaskInstance(instanceId);
-            if(instance != null && instance.getStatus() == TaskInstance.IS_ASSIGNED) {
-                responseMsg = RespCodeMsgDepository.DELETE_TASK_ERROR.toResponseMsg();
-                return;
-            }
+
             List<String> ids = null;
             if(!Strings.isNullOrEmpty(content.getString("ids"))) {
                 ids = Lists.newArrayList(content.getString("ids").split(","));
@@ -433,33 +553,11 @@ public class TaskController {
         }
     }
 
-    @RequestMapping("/detail/abandon")
-    @ResponseBody
-    public void abandonTaskDetail(HttpServletRequest req) {
-        ResponseMsg responseMsg = null;
-        try {
-            User user = (User) req.getSession().getAttribute(InProcessContext.getRequestMsg().getToken());
-            if(user.getUserType() == STAFF) {
-                responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
-                return;
-            }
-
-            // 废弃具体详细任务
-            JSONObject content = InProcessContext.getRequestMsg().getContent();
-            itask.abandonTaskDetail(user, content.getString("instanceId"), content.getString("id"));
-            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
-        } catch (Exception e) {
-            LOGGER.error("明细任务废弃失败", e);
-            responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
-        } finally {
-            InProcessContext.setResponseMsg(responseMsg);
-        }
-    }
-
     @RequestMapping("/detail/save")
     @ResponseBody
     public void saveTaskDetail(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
+
         try {
             String token = InProcessContext.getRequestMsg().getToken();
             User user = (User) req.getSession().getAttribute(token);
@@ -467,25 +565,46 @@ public class TaskController {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
-            // 只能在未发布状态下进行新增
+
             JSONObject content = InProcessContext.getRequestMsg().getContent();
-            TaskInstance instance = itask.getTaskInstance(content.getString("instanceId"));
-            if(instance.getStatus() != TaskInstance.NOT_PUBLISHED) {
+            TaskInstance instance = itask.getTaskInstance(content.getString("taskId"));
+            if(instance.getPublishStatus() != TaskInstance.NOT_PUBLISHED) {
                 responseMsg = RespCodeMsgDepository.SAVE_TASK_ERROR.toResponseMsg();
                 return;
             }
             TaskDetail detail = new TaskDetail();
             detail.setId(DefaultIdGenerator.getIdForStr());
+            detail.setTaskId(content.getString("taskId"));
             detail.setTaskDetailName(content.getString("taskDetailName"));
-            detail.setTaskDesc(content.getString("taskDescName"));
+            detail.setTaskDesc(content.getString("taskDesc"));
             detail.setTaskUnitPrice(content.getDoubleValue("taskUnitPrice"));
-            detail.setTaskTotalPrice(content.getDoubleValue("taskTotalPrice"));
             detail.setTaskNum(content.getIntValue("taskNum"));
+            if(content.getString("taskTotalPrice") == null || "0".equals(content.getString("taskTotalPrice"))) {
+                detail.setTaskTotalPrice(content.getDoubleValue("taskUnitPrice") * content.getIntValue("taskNum"));
+            }
+            String recieverId = content.getString("recieverId");
+            detail.setRecieverId(recieverId);
+            String recieverName = content.getString("recieverName");
+            if(Strings.isNullOrEmpty(recieverName) && !Strings.isNullOrEmpty(recieverId)) {
+                User reciever = iuser.getUser(recieverId);
+                if(reciever != null) {
+                    detail.setRecieverName(reciever.getUserName());
+                }
+            }
             detail.setSalerId(content.getString("salerId"));
             detail.setSalerName(content.getString("salerName"));
+            detail.setSalerTMName(content.getString("salerTMName"));
             detail.setStatus(TaskDetail.NOT_CLAIMED);
             detail.setTotalCommission(content.getDoubleValue("totalCommission"));
             detail.setCreateTime(new Date());
+            List<FileInfo> detailFiles = Lists.newArrayList();
+            JSONArray detailFileArr = content.getJSONArray("detailFiles");
+            if(detailFileArr != null) {
+                for(int i = 0; i < detailFileArr.size(); i++) {
+                    detailFiles.add(JSONObject.parseObject(detailFileArr.get(i).toString(), FileInfo.class));
+                }
+            }
+            detail.setDetailFiles(detailFiles);
             itask.saveTaskDetail(detail);
 
             responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
@@ -497,28 +616,34 @@ public class TaskController {
         }
     }
 
-    @RequestMapping("/detail/publish")
+    @RequestMapping("/detail/delFiles")
     @ResponseBody
-    public void publishTaskDetail(HttpServletRequest req) {
+    public void delTaskDetailFiles(HttpServletRequest req) {
         ResponseMsg responseMsg = null;
         try {
-            String token = InProcessContext.getRequestMsg().getToken();
-            User user = (User) req.getSession().getAttribute(token);
-            if(user.getUserType() == STAFF) {
+            if(!checkUserAdmin(req)) {
                 responseMsg = RespCodeMsgDepository.LACK_PRIVILEGIER.toResponseMsg();
                 return;
             }
 
-            // 具体任务发布
+            // 删除具体详细任务文件列表
             JSONObject content = InProcessContext.getRequestMsg().getContent();
-            itask.publishTaskDetail(user, content.getString("instanceId"));
+            String detailId = content.getString("id");
+
+            List<String> fileIds = null;
+            if(!Strings.isNullOrEmpty(content.getString("fileIds"))) {
+                fileIds = Lists.newArrayList(content.getString("fileIds").split(","));
+            }
+            itask.delTaskDetailFiles(fileIds, detailId);
+            responseMsg = ResponseMsg.ResponseMsgBuilder.build(RespCodeMsgDepository.SUCCESS, null);
         } catch (Exception e) {
-            LOGGER.error("任务详细信息发布失败", e);
+            LOGGER.error("任务详细信文件删除失败", e);
             responseMsg = RespCodeMsgDepository.SERVER_INTERNAL_ERROR.toResponseMsg();
         } finally {
             InProcessContext.setResponseMsg(responseMsg);
         }
     }
+
 
     // ToDo 这段有点难以理解
     private boolean checkUserAdmin(HttpServletRequest req) {

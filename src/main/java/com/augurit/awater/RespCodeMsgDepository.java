@@ -25,6 +25,8 @@ public enum RespCodeMsgDepository {
     FILE_NOT_EXISTS("0013", "文件不存在"),
     TASK_NOT_EXISTS("0014", "任务不存在"),
     TASK_PUBLISHED_FAILED("0015", "任务发布失败"),
+    UPLOAD_FAILED("0016", "文件上传失败"),
+    DOWNLOAD_FAILED("0017", "文件下载失败"),
     ;
 
     private final String code;

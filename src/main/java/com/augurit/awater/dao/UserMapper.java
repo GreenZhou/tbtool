@@ -4,6 +4,7 @@ import com.augurit.awater.entity.User;
 import org.apache.ibatis.annotations.Param;
 import org.springframework.stereotype.Repository;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Repository
@@ -14,4 +15,5 @@ public interface UserMapper {
     void saveUserBatch(@Param("users") List<User> users) throws Exception;
     void delUsers(@Param("ids") List<String> ids, @Param("userType") int userType) throws Exception;
     void updUser(@Param("user") User user) throws Exception;
+	List<User> getUserByIds(@Param("ids") List<String> ids);
 }

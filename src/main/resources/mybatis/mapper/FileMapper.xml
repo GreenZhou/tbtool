@@ -58,7 +58,7 @@
     </select>
 
     <!-- 通过文件目录组查找所有的附件信息，如果集合为空，则查询所有的附件信息 -->
-    <select id="listFileInfos" parameterType="java.util.List" resultType="FileInfo">
+    <select id="findFileInfoList" parameterType="java.util.List" resultType="FileInfo">
         SELECT <include refid="allColumns"/>
         FROM TB_FILE f
         WHERE 1=1
@@ -69,25 +69,28 @@
     </select>
 
     <!-- 保存服务审批文件 -->
-    <insert id="saveTaskFiles">
-        INSERT INTO TASK_FILE(INSTANCEID, FILEID)
+    <insert id="saveTaskDetailFiles">
+        INSERT INTO tb_detail_file(detail_id, file_id)
         VALUES
         <foreach collection="ids" item="item" open="" separator="," close="">
-            (#{instanceId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR})
+            (#{detailId, jdbcType=VARCHAR}, #{item, jdbcType=VARCHAR})
         </foreach>
     </insert>
 
-    <!-- 根据申请实例ID获取文件列表信息 -->
-    <select id="findFileInfosByInstanceId" resultType="FileInfo">
+    <!-- 根据任务明细ID获取文件列表信息 -->
+    <select id="findFileInfosByTaskDetailId" resultType="FileInfo">
         SELECT <include refid="allColumns"/>
-        FROM TASK_FILE tf left join TB_FILE f
-        ON tf.FILEID = f.ID
-        WHERE tf.INSTANCEID = #{instanceId}
+        FROM TB_DETAIL_FILE tf left join TB_FILE f
+        ON tf.file_id = f.ID
+        WHERE tf.detail_id = #{detailId}
     </select>
 
-    <delete id="removeTaskFile">
-        DELETE FROM TASK_FILE
-        WHERE INSTANCEID = #{instanceId}
-            AND FILEID = #{id}
+    <!-- 删除任务明细ID文件列表信息 -->
+    <delete id="removeTaskDetailFile">
+        DELETE FROM TB_DETAIL_FILE
+        WHERE detail_id = #{detailId}
+        <if test="id != '' and id != null">
+            AND file_id = #{id}
+        </if>
     </delete>
 </mapper>

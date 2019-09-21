@@ -48,7 +48,7 @@ public interface FileMapper {
 	 * @return
 	 * @throws Exception
 	 */
-	List<FileInfo> listFileInfos(@Param("dirIds") List<String> dirIds, @Param("fileName") String fileName) throws Exception;
+	List<FileInfo> findFileInfoList(@Param("dirIds") List<String> dirIds, @Param("fileName") String fileName) throws Exception;
 
 	/**
 	 * 通过id查找单个文件信息对象
@@ -59,27 +59,27 @@ public interface FileMapper {
 	FileInfo getFileInfo(String id) throws Exception;
 
 	/**
-	 * 保存服务附件
-	 * @param instanceId 申请ID
+	 * 保存任务明细附件
+	 * @param detailId 任务明细ID
 	 * @param ids 附件ID
 	 * @throws Exception
 	 */
-	void saveTaskFiles(@Param("instanceId") String instanceId, @Param("ids") List<String> ids) throws Exception;
+	void saveTaskDetailFiles(@Param("detailId") String detailId, @Param("ids") List<String> ids) throws Exception;
 
 	/**
-	 * 根据申请实例ID获取文件列表信息
-	 * @param instanceId
+	 * 根据任务明细ID获取文件列表信息
+	 * @param detailId
 	 * @return
 	 * @throws Exception
 	 */
-	List<FileInfo> findFileInfosByInstanceId(@Param("instanceId") String instanceId) throws Exception;
+	List<FileInfo> findFileInfosByTaskDetailId(@Param("detailId") String detailId) throws Exception;
 
 	/**
 	 * 删除一条记录
-	 * @param instanceId
+	 * @param detailId
 	 * @param id
 	 */
-	void removeTaskFile(@Param("instanceId") String instanceId, @Param("id") String id);
+	void removeTaskDetailFile(@Param("detailId") String detailId, @Param("id") String id);
 
 	/**
 	 * 删除一组文件记录

@@ -71,4 +71,13 @@
           and user_type = #{user.userType}
         </if>
     </update>
+
+    <select id="getUserByIds" resultType="User">
+        select id, login_name  loginName, user_name userName, user_type userType
+        from tb_user
+        where id in
+        <foreach collection="ids" open="(" close=")" separator="," item="id">
+            #{id}
+        </foreach>
+    </select>
 </mapper>
